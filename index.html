@@ -1,0 +1,2216 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <script>
+      // Fix for "Uncaught TypeError: Cannot set property fetch of #<Window> which has only a getter"
+      // This happens if a library/extension tries to override window.fetch in an environment where it's read-only.
+      try {
+        const originalFetch = window.fetch;
+        let customFetch = originalFetch;
+        Object.defineProperty(window, 'fetch', {
+          get() { return customFetch; },
+          set(val) { customFetch = val; },
+          configurable: true,
+          enumerable: true
+        });
+      } catch (e) {
+        console.warn("Could not patch window.fetch setter:", e);
+      }
+    </script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>رحلة رواد الأعمال الصغار - الجملة الاسمية والفعلية</title>
+    <!-- Google Fonts: Cairo & Tajawal -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800;900&family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Canvas Confetti CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              cairo: ['Cairo', 'sans-serif'],
+              tajawal: ['Tajawal', 'sans-serif'],
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      body {
+        font-family: 'Cairo', 'Tajawal', sans-serif;
+        background-color: #F8FAFC;
+        user-select: none;
+      }
+      /* Custom scrollbar for beautiful dashboard lists */
+      ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #F1F5F9;
+        border-radius: 8px;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #CBD5E1;
+        border-radius: 8px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #94A3B8;
+      }
+      /* Highlight animation for speaking words */
+      .word-highlight {
+        animation: wordPulse 0.3s ease-in-out infinite alternate;
+      }
+      @keyframes wordPulse {
+        from { transform: scale(1.05); filter: brightness(1.1); }
+        to { transform: scale(1.1); filter: brightness(1.25); }
+      }
+      /* Shaking animation on wrong answer */
+      .shake {
+        animation: shakeEffect 0.5s ease-in-out;
+      }
+      @keyframes shakeEffect {
+        0%, 100% { transform: translateX(0); }
+        20%, 60% { transform: translateX(-6px); }
+        40%, 80% { transform: translateX(6px); }
+      }
+    </style>
+  </head>
+  <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col font-cairo">
+
+    <div class="min-h-screen pb-12 px-2 sm:px-4 md:px-6 flex flex-col">
+      <!-- Top Header Bar -->
+      <header class="w-full max-w-7xl mx-auto bg-white/95 backdrop-blur-md rounded-3xl p-4 md:p-5 mt-5 mb-5 shadow-lg border-4 border-yellow-300 flex flex-wrap items-center justify-between gap-4 transition-all">
+        <!-- Academy Branding & Lesson Title -->
+        <div class="flex flex-wrap items-center gap-4">
+          <!-- Duroub Academy Logo Card -->
+          <div class="flex items-center gap-3 bg-white px-4 py-2.5 rounded-2xl border-2 border-indigo-100 shadow-sm">
+            <svg class="h-10 md:h-12 w-auto shrink-0" viewBox="0 0 200 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="45" cy="28" r="18" fill="#58A638" />
+              <path d="M45 42C45 32 35 28 32 20C42 21 44 29 45 42Z" fill="#1C215B" />
+              <path d="M45 42C45 32 55 28 58 20C48 21 46 29 45 42Z" fill="#1C215B" />
+              <rect x="43.5" y="28" width="3" height="14" rx="1.5" fill="#1C215B" />
+              
+              <circle cx="100" cy="28" r="18" fill="#80CAEE" />
+              <path d="M91 18L99 28L91 38" stroke="#1C215B" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
+              <path d="M99 18L107 28L99 38" stroke="#1C215B" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
+
+              <circle cx="155" cy="28" r="18" fill="#F8C300" />
+              <path d="M152 10.5 C164 11 172 18 172 28 L152 28 Z" fill="#FFFFFF" />
+
+              <text x="100" y="80" text-anchor="middle" fill="#1C215B" font-family="'Cairo', sans-serif" font-weight="900" font-size="34" letter-spacing="-1">duroub</text>
+            </svg>
+            <div class="text-right border-r-2 border-slate-200 pr-3">
+              <span class="block text-sm font-black text-indigo-950 leading-tight">أكاديمية دروب</span>
+              <span class="block text-[10px] font-extrabold text-indigo-500 tracking-wider">DUROUB ACADEMY</span>
+            </div>
+          </div>
+
+          <!-- Lesson Title & Icon -->
+          <div class="flex items-center gap-3">
+            <div class="w-12 h-12 bg-gradient-to-tr from-yellow-400 to-orange-500 rounded-2xl flex items-center justify-center text-white text-2xl shadow-md animate-bounce" style="animation-duration: 3s">
+              🚀
+            </div>
+            <div>
+              <h1 class="text-lg md:text-2xl font-black text-slate-800 tracking-tight">رحلة رواد الأعمال الصغار</h1>
+              <p class="text-xs md:text-sm font-bold text-indigo-600 flex flex-wrap items-center gap-1 leading-tight mt-0.5">
+                <span>الجملة الاسمية والجملة الفعلية</span>
+                <span class="text-slate-300">•</span>
+                <span class="bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded-full text-[10px] font-black">وحدة الهوية: كيف ننظم أنفسنا</span>
+              </p>
+            </div>
+          </div>
+        </div>
+
+
+
+      </header>
+
+      <!-- Navigation Tabs bar -->
+      <nav class="max-w-7xl mx-auto w-full mb-6 overflow-x-auto py-1 whitespace-nowrap">
+        <div class="flex gap-3 px-1 min-w-max">
+          <button onclick="switchTab('story')" id="tabBtn-story" class="px-5 py-3.5 rounded-2xl border-2 font-black text-xs md:text-sm transition-all duration-200 transform flex items-center gap-2 cursor-pointer bg-indigo-600 text-white border-indigo-400 shadow-md">
+            <span class="text-xl shrink-0">📖</span>
+            <span class="leading-none">نتعرف (قصة سارة)</span>
+          </button>
+          <button onclick="switchTab('lab')" id="tabBtn-lab" class="px-5 py-3.5 rounded-2xl border-2 font-black text-xs md:text-sm transition-all duration-200 transform flex items-center gap-2 cursor-pointer bg-amber-50/65 text-amber-900 border-amber-200 hover:bg-amber-100/70">
+            <span class="text-xl shrink-0">💡</span>
+            <span class="leading-none">نفكر (مختبر القواعد)</span>
+          </button>
+          <button onclick="switchTab('game')" id="tabBtn-game" class="px-5 py-3.5 rounded-2xl border-2 font-black text-xs md:text-sm transition-all duration-200 transform flex items-center gap-2 cursor-pointer bg-rose-50/65 text-rose-900 border-rose-200 hover:bg-rose-100/70">
+            <span class="text-xl shrink-0">🎮</span>
+            <span class="leading-none">يلا نلعب</span>
+          </button>
+          <button onclick="switchTab('ticket')" id="tabBtn-ticket" class="px-5 py-3.5 rounded-2xl border-2 font-black text-xs md:text-sm transition-all duration-200 transform flex items-center gap-2 cursor-pointer bg-sky-50/65 text-sky-900 border-sky-200 hover:bg-sky-100/70">
+            <span class="text-xl shrink-0">🎓</span>
+            <span class="leading-none">الخاتمة</span>
+          </button>
+        </div>
+      </nav>
+
+      <!-- Main Content Area Container -->
+      <main class="flex-grow max-w-7xl mx-auto w-full px-4 py-2">
+
+      <!-- ==================== STORY TAB ==================== -->
+      <section id="tabContent-story" class="tab-pane hidden space-y-6">
+        <div class="bg-white border-4 border-indigo-200 rounded-3xl p-6 shadow-xl relative transition-all">
+          
+          <!-- Tab Title -->
+          <div class="flex flex-wrap items-center justify-between gap-4 mb-6 border-b pb-4 border-slate-100">
+            <div class="flex items-center gap-3">
+              <span class="text-3xl">✨</span>
+              <div>
+                <h2 class="text-xl md:text-2xl font-black text-indigo-950">قصة السوق الخيري بالمدرسة</h2>
+              </div>
+            </div>
+          </div>
+
+          <div class="space-y-8">
+            
+            <!-- Illustration Image Card -->
+            <div class="bg-gradient-to-r from-indigo-50 via-indigo-50/30 to-pink-50 p-6 rounded-3xl border-2 border-indigo-100 text-center relative shadow-sm max-w-xl mx-auto w-full">
+              <div class="w-full max-w-md mx-auto h-56 rounded-2xl mb-4 overflow-hidden shadow-md border-4 border-white bg-white flex items-center justify-center hover:scale-102 transition-transform duration-300">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRvg3wsGOsn2rBPiYAhJApi4asTEm59PQ07jQ&s" alt="صناعة أساور الخرز الملونة للأطفال" class="w-full h-full object-cover" />
+              </div>
+              <div class="inline-block bg-pink-100 border border-pink-300 text-pink-700 px-4 py-1.5 rounded-full text-xs font-black shadow-sm">
+                نشاط الأساور الملونة في السوق الخيري بالمدرسة 📿✨
+              </div>
+            </div>
+
+            <!-- Discussion & Inquiry section -->
+            <div class="bg-indigo-50/50 rounded-2xl p-6 border-2 border-indigo-100/50 space-y-4 max-w-xl mx-auto w-full">
+              <h3 class="text-sm font-black text-indigo-900 mb-2 flex items-center gap-1.5 justify-start">
+                <span>🤔 مناقشة وتفكير تفاعلي للفصل:</span>
+              </h3>
+              
+              <div class="space-y-3" id="brainstormContainer">
+                <!-- Will be dynamically generated -->
+              </div>
+            </div>
+
+            <!-- Story highlight text wrapper -->
+            <div class="max-w-xl mx-auto w-full">
+              <div id="storyTextContainer" class="p-6 rounded-3xl border-2 transition-all duration-300 bg-amber-50/75 border-amber-100 space-y-4">
+                
+                <!-- Audio Play / Pause Button -->
+                <div class="flex justify-center mb-2">
+                  <button id="storyVoiceBtn" onclick="toggleStoryAudio()" class="px-6 py-3.5 rounded-2xl font-black text-sm md:text-base inline-flex items-center justify-center gap-3 transition transform active:scale-95 shadow-md bg-indigo-600 hover:bg-indigo-700 text-white cursor-pointer min-w-[150px]">
+                    <span id="storyVoiceIcon" class="text-xl">▶️</span>
+                    <span id="storyVoiceText">تشغيل القصة</span>
+                  </button>
+                </div>
+
+                <!-- Text with dynamic highlighting elements -->
+                <p class="text-base md:text-xl font-bold leading-loose text-slate-800 text-center" id="storyParagraph">
+                  <!-- Generated dynamically in script -->
+                </p>
+
+                <!-- Comparative box -->
+                <div class="mt-5 bg-white p-4 rounded-2xl border-2 border-dashed border-orange-300 space-y-3">
+                  <h3 class="text-xs md:text-sm font-black text-orange-600 flex items-center gap-1.5 justify-center">
+                    <span>لاحظ الفرق اللغوي في جملتين من قصتنا:</span>
+                  </h3>
+
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div onclick="playPitchSound(500, 0.1)" class="p-3.5 bg-rose-50/70 hover:bg-rose-50 border border-rose-200 rounded-xl cursor-pointer transition text-center">
+                      <span class="text-[10px] font-bold text-rose-500 block mb-0.5">الجملة الاسمية</span>
+                      <p class="text-lg font-black text-rose-950">
+                        <span class="underline decoration-wavy decoration-rose-400">سارةُ</span> مبدعةٌ.
+                      </p>
+                      <span class="text-[11px] text-slate-500 block mt-1">
+                        بدأت بـاسم: <b class="text-rose-700">سارة</b>
+                      </span>
+                    </div>
+
+                    <div onclick="playPitchSound(600, 0.1)" class="p-3.5 bg-emerald-50/70 hover:bg-emerald-50 border border-emerald-200 rounded-xl cursor-pointer transition text-center">
+                      <span class="text-[10px] font-bold text-emerald-500 block mb-0.5">الجملة الفعلية</span>
+                      <p class="text-lg font-black text-emerald-950">
+                        <span class="underline decoration-wavy decoration-emerald-400">تبيعُ</span> سارةُ الأساورَ.
+                      </p>
+                      <span class="text-[11px] text-slate-500 block mt-1">
+                        بدأت بـفعل: <b class="text-emerald-700">تبيعُ</b>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Bottom CTA -->
+          <div class="mt-8 bg-gradient-to-r from-indigo-900 to-slate-900 text-white p-5 rounded-2xl flex flex-wrap items-center justify-between gap-4 shadow-md">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 bg-yellow-400 text-slate-900 rounded-full flex items-center justify-center text-xl font-bold animate-pulse">💡</div>
+              <div class="text-right">
+                <h4 class="font-black text-sm md:text-base">هل أنت مستعد لاكتشاف لغز الجمل؟</h4>
+                <p class="text-xs text-slate-300">تفضل بالانتقال لمختبر القواعد لتصنيف الجمل وتجربة التركيب الذكي!</p>
+              </div>
+            </div>
+            <button onclick="switchTab('lab')" class="bg-yellow-400 hover:bg-yellow-300 text-indigo-950 font-black px-5 py-3 rounded-xl text-sm transition-all shadow-md transform active:translate-y-0.5 flex items-center gap-1.5">
+              <span>هيا بنا إلى مختبر القواعد!</span>
+              <span>⬅️</span>
+            </button>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ==================== CONCEPT LAB TAB ==================== -->
+      <section id="tabContent-lab" class="tab-pane hidden space-y-6">
+        <div class="bg-white border-4 border-amber-200 rounded-3xl p-6 shadow-xl transition-all">
+          
+          <!-- Tab Main Title -->
+          <div class="text-center max-w-2xl mx-auto mb-8 space-y-2">
+            <h2 class="text-2xl md:text-3xl font-black text-slate-800">التمييز بين الاسم والفعل</h2>
+          </div>
+
+          <!-- ==================== NOUN & VERB DISTINCTION SECTION ==================== -->
+          <div class="bg-gradient-to-br from-indigo-50/60 via-emerald-50/30 to-amber-50/30 border-4 border-indigo-100 rounded-3xl p-6 mb-8 space-y-6 text-right">
+            
+            <!-- Section Header -->
+            <div class="flex items-center gap-3 border-b pb-3 border-indigo-100/70">
+              <span class="text-3xl">📘</span>
+              <div class="text-right">
+                <h3 class="font-black text-indigo-950 text-base md:text-lg">الفرق بين الاسم والفعل</h3>
+              </div>
+            </div>
+
+            <!-- Noun vs Verb Definition Cards Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              
+              <!-- NOUN CARD (الاسم) -->
+              <div class="bg-white rounded-2xl border-2 border-emerald-300 p-5 shadow-sm space-y-4">
+                <div class="flex items-center gap-3 border-b border-emerald-100 pb-3">
+                  <div class="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-800 flex items-center justify-center text-2xl font-black shadow-inner">
+                    👤
+                  </div>
+                  <div>
+                    <h4 class="text-lg font-black text-emerald-900">١. الاِسْم (Noun)</h4>
+                    <span class="text-[11px] bg-emerald-50 text-emerald-700 font-extrabold px-2 py-0.5 rounded-md border border-emerald-200">يدل على شيء ثابت لا يرتبط بزمن</span>
+                  </div>
+                </div>
+
+                <div class="space-y-3 text-xs md:text-sm text-slate-700 font-bold leading-relaxed">
+                  <p>
+                    <b>التعريف المباشر:</b> هو كلُّ كلمةٍ تَدُلُّ على <span class="text-emerald-800 underline">إنسانٍ</span>، أو <span class="text-emerald-800 underline">حيوانٍ</span>، أو <span class="text-emerald-800 underline">نباتٍ</span>، أو <span class="text-emerald-800 underline">جمادٍ</span>، أو <span class="text-emerald-800 underline">مكانٍ</span>.
+                  </p>
+
+                  <!-- Visual Colorful Examples for Children -->
+                  <div class="bg-emerald-50/80 rounded-xl p-3 border border-emerald-100 space-y-2 text-xs">
+                    <span class="block text-emerald-900 font-black">🎨 أَمْثِلَةٌ مصورة لطيفة للأطفال:</span>
+                    <div class="grid grid-cols-3 gap-2 text-center font-black">
+                      <div class="bg-white p-2.5 rounded-xl border border-emerald-200 text-emerald-900 shadow-sm">
+                        <span class="text-2xl block mb-1">👧</span>
+                        <span>سَارَةُ</span>
+                        <span class="text-[9px] block text-emerald-600 font-normal">(إنسان)</span>
+                      </div>
+                      <div class="bg-white p-2.5 rounded-xl border border-emerald-200 text-emerald-900 shadow-sm">
+                        <span class="text-2xl block mb-1">📖</span>
+                        <span>كِتَابٌ</span>
+                        <span class="text-[9px] block text-emerald-600 font-normal">(جماد)</span>
+                      </div>
+                      <div class="bg-white p-2.5 rounded-xl border border-emerald-200 text-emerald-900 shadow-sm">
+                        <span class="text-2xl block mb-1">🏫</span>
+                        <span>مَدْرَسَةٌ</span>
+                        <span class="text-[9px] block text-emerald-600 font-normal">(مكان)</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs space-y-1">
+                    <span class="font-black text-slate-800 block">💡 كيف نعرف الاسم؟</span>
+                    <p class="text-slate-600">يقبل دخول <b>(الـ)</b> التعريف مثل: (الكِتَاب) أو ينتهي بـ <b>التَّنْوِين</b> مثل: (كِتَابٌ).</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- VERB CARD (الفعل) -->
+              <div class="bg-white rounded-2xl border-2 border-amber-300 p-5 shadow-sm space-y-4">
+                <div class="flex items-center gap-3 border-b border-amber-100 pb-3">
+                  <div class="w-12 h-12 rounded-2xl bg-amber-100 text-amber-800 flex items-center justify-center text-2xl font-black shadow-inner">
+                    🏃‍♂️
+                  </div>
+                  <div>
+                    <h4 class="text-lg font-black text-amber-900">٢. الْفِعْل (Verb)</h4>
+                    <span class="text-[11px] bg-amber-50 text-amber-700 font-extrabold px-2 py-0.5 rounded-md border border-amber-200">يدل على عمل وحركة</span>
+                  </div>
+                </div>
+
+                <div class="space-y-3 text-xs md:text-sm text-slate-700 font-bold leading-relaxed">
+                  <p>
+                    <b>التعريف المباشر:</b> هو كلُّ كلمةٍ تَدُلُّ على <span class="text-amber-800 underline">عملٍ أو حركةٍ</span> تحدث في زمنٍ معَيَّنٍ (ماضٍ، مضارع، أو أمر).
+                  </p>
+
+                  <!-- Visual Colorful Examples for Children -->
+                  <div class="bg-amber-50/80 rounded-xl p-3 border border-amber-100 space-y-2 text-xs">
+                    <span class="block text-amber-900 font-black">🎨 أَمْثِلَةٌ مصورة لطيفة للأطفال:</span>
+                    <div class="grid grid-cols-3 gap-2 text-center font-black">
+                      <div class="bg-white p-2.5 rounded-xl border border-amber-200 text-amber-900 shadow-sm">
+                        <span class="text-2xl block mb-1">✍️</span>
+                        <span>كَتَبَ</span>
+                        <span class="text-[9px] block text-amber-600 font-normal">(حدث وانتهى)</span>
+                      </div>
+                      <div class="bg-white p-2.5 rounded-xl border border-amber-200 text-amber-900 shadow-sm">
+                        <span class="text-2xl block mb-1">🎨</span>
+                        <span>تَصْنَعُ</span>
+                        <span class="text-[9px] block text-amber-600 font-normal">(تعمل الآن)</span>
+                      </div>
+                      <div class="bg-white p-2.5 rounded-xl border border-amber-200 text-amber-900 shadow-sm">
+                        <span class="text-2xl block mb-1">🏃</span>
+                        <span>اقْفِزْ</span>
+                        <span class="text-[9px] block text-amber-600 font-normal">(طلب عمل)</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs space-y-1">
+                    <span class="font-black text-slate-800 block">💡 كيف نعرف الفعل؟</span>
+                    <p class="text-slate-600"><b>لا يقبل</b> دخول (الـ) التعريف ولا التَّنْوين (فلا نقول: الـتَكْتُبُ ❌ أو تَكْتُبٌ ❌).</p>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
+          <!-- Section Line Divider -->
+          <div class="relative flex py-4 items-center">
+            <div class="flex-grow border-t-2 border-dashed border-slate-200"></div>
+            <span class="flex-shrink mx-4 text-xs font-black text-indigo-950 bg-indigo-50 px-3.5 py-1.5 rounded-full border border-indigo-200">الخطوة الثانية: تركيب وأنواع الجمل ⬇️</span>
+            <div class="flex-grow border-t-2 border-dashed border-slate-200"></div>
+          </div>
+
+          <!-- Sentence comparison boards -->
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            
+            <!-- Nominal Box -->
+            <div class="bg-emerald-50/50 rounded-3xl p-6 border-4 border-emerald-100 shadow-sm">
+              <div class="flex items-center justify-between mb-4 border-b pb-3 border-emerald-100">
+                <h3 class="text-xl md:text-2xl font-black text-emerald-700">🏷️ الجملة الاسمية</h3>
+                <span class="bg-emerald-200/60 text-emerald-950 text-xs font-black px-3 py-1 rounded-full border border-emerald-300">هي التي تبدأ باسم 🏠</span>
+              </div>
+              <p class="text-xs md:text-sm font-semibold text-slate-500 mb-4">
+                تتكون من ركنين أساسيين: <b class="text-emerald-700">المبتدأ</b> و<b class="text-blue-600">الخبر</b> (مرفوعان بالضمة).
+              </p>
+
+              <div class="space-y-3.5" id="nominalLabSentences">
+                <!-- Generated dynamically -->
+              </div>
+            </div>
+
+            <!-- Verbal Box -->
+            <div class="bg-purple-50/50 rounded-3xl p-6 border-4 border-purple-100 shadow-sm">
+              <div class="flex items-center justify-between mb-4 border-b pb-3 border-purple-100">
+                <h3 class="text-xl md:text-2xl font-black text-purple-700">⚡ الجملة الفعلية</h3>
+                <span class="bg-purple-200/60 text-purple-950 text-xs font-black px-3 py-1 rounded-full border border-purple-300">هي التي تبدأ بفعل 🏃</span>
+              </div>
+              <p class="text-xs md:text-sm font-semibold text-slate-500 mb-4">
+                تتكون من ركنين أساسيين: <b class="text-purple-700">الفعل</b> و<b class="text-indigo-700">الفاعل</b> (الذي قام بالفعل).
+              </p>
+
+              <div class="space-y-3.5" id="verbalLabSentences">
+                <!-- Generated dynamically -->
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Coach Tooltip Detail Box -->
+          <div id="coachDrawer" class="hidden mb-8 transition-all">
+            <div class="bg-gradient-to-r from-indigo-50 to-purple-50 border-4 border-indigo-200 rounded-3xl p-5 shadow-inner">
+              <div class="flex items-start justify-between gap-4">
+                <div class="flex items-center gap-3">
+                  <span class="text-2xl">👩‍🏫</span>
+                  <h4 class="text-sm font-black text-indigo-950" id="coachTitle">مساعد النحو الذكي يحلل الكلمة</h4>
+                </div>
+                <button onclick="closeCoachDrawer()" class="text-xs font-black text-indigo-600 hover:text-indigo-900 bg-white border border-indigo-200 px-2.5 py-1 rounded-xl shadow-sm transition">إغلاق ✕</button>
+              </div>
+
+              <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
+                <!-- Grammatical role badge -->
+                <div class="bg-white p-3.5 rounded-2xl border border-indigo-100 text-center shadow-sm">
+                  <span class="text-[10px] font-bold text-slate-400 block mb-1">الموقع الإعرابي</span>
+                  <span id="coachBadge" class="inline-block px-3 py-1.5 rounded-xl font-black text-sm"></span>
+                </div>
+
+                <!-- Arabic rule details -->
+                <div class="bg-white p-3.5 rounded-2xl border border-indigo-100 text-center shadow-sm">
+                  <span class="text-[10px] font-bold text-slate-400 block mb-1">الحالة الإعرابية</span>
+                  <p class="text-xs md:text-sm font-black text-indigo-950" id="coachRule"></p>
+                </div>
+
+                <!-- Simple explanation -->
+                <div class="bg-white p-3.5 rounded-2xl border border-indigo-100 text-center md:text-right shadow-sm">
+                  <span class="text-[10px] font-bold text-slate-400 block mb-1 text-center">لماذا يا ترى؟ 🤔</span>
+                  <p class="text-xs font-bold text-slate-600 leading-relaxed" id="coachExplanation"></p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+
+        </div>
+      </section>
+
+      <!-- ==================== GAME TAB ==================== -->
+      <section id="tabContent-game" class="tab-pane hidden space-y-6">
+        <div class="bg-white border-4 border-rose-200 rounded-3xl p-6 shadow-xl transition-all">
+          
+          <div class="text-center max-w-2xl mx-auto mb-6">
+            <h2 class="text-2xl md:text-3xl font-black text-slate-800">تحدي فرسان القواعد بين المجموعات</h2>
+            <p class="text-xs text-slate-500 font-bold mt-1">مسابقة جماعية وتفاعلية مخصصة لثلاث مجموعات لتوزيع التنافس والتميز! 🏆</p>
+          </div>
+
+          <!-- Team selectors -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6" id="groupSelectorGrid">
+            <!-- Team 1 -->
+            <button onclick="selectGroup(1)" id="groupBtn-1" class="p-4 rounded-2xl border-2 text-right transition-all transform active:scale-98 shadow-sm flex items-center justify-between gap-3 bg-slate-50 border-slate-200">
+              <div class="flex items-center gap-3">
+                <span class="text-3xl bg-white p-2 rounded-xl border border-slate-100">🚀</span>
+                <div>
+                  <h3 class="font-black text-sm md:text-base text-slate-800">المستكشفون (فريق ١)</h3>
+                </div>
+              </div>
+              <span id="groupActiveSpan-1" class="hidden bg-indigo-600 text-white text-[10px] font-black px-2 py-1 rounded-lg">النشط</span>
+            </button>
+            <!-- Team 2 -->
+            <button onclick="selectGroup(2)" id="groupBtn-2" class="p-4 rounded-2xl border-2 text-right transition-all transform active:scale-98 shadow-sm flex items-center justify-between gap-3 bg-slate-50 border-slate-200">
+              <div class="flex items-center gap-3">
+                <span class="text-3xl bg-white p-2 rounded-xl border border-slate-100">🎨</span>
+                <div>
+                  <h3 class="font-black text-sm md:text-base text-slate-800">المبدعون (فريق ٢)</h3>
+                </div>
+              </div>
+              <span id="groupActiveSpan-2" class="hidden bg-indigo-600 text-white text-[10px] font-black px-2 py-1 rounded-lg">النشط</span>
+            </button>
+            <!-- Team 3 -->
+            <button onclick="selectGroup(3)" id="groupBtn-3" class="p-4 rounded-2xl border-2 text-right transition-all transform active:scale-98 shadow-sm flex items-center justify-between gap-3 bg-slate-50 border-slate-200">
+              <div class="flex items-center gap-3">
+                <span class="text-3xl bg-white p-2 rounded-xl border border-slate-100">💡</span>
+                <div>
+                  <h3 class="font-black text-sm md:text-base text-slate-800">المفكرون (فريق ٣)</h3>
+                </div>
+              </div>
+              <span id="groupActiveSpan-3" class="hidden bg-indigo-600 text-white text-[10px] font-black px-2 py-1 rounded-lg">النشط</span>
+            </button>
+          </div>
+
+          <!-- Classroom Scoreboard -->
+          <div class="bg-indigo-950 text-white rounded-2xl p-4 mb-6 shadow-inner border-2 border-indigo-800 flex flex-wrap justify-around items-center gap-4 text-xs md:text-sm font-bold">
+            <div class="flex items-center gap-2">
+              <span>🚀</span>
+              <span>المستكشفون:</span>
+              <span id="scoreBadge-1" class="bg-emerald-500 text-white px-3.5 py-0.5 rounded-full font-black text-sm shadow">0 ن</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span>🎨</span>
+              <span>المبدعون:</span>
+              <span id="scoreBadge-2" class="bg-amber-500 text-white px-3.5 py-0.5 rounded-full font-black text-sm shadow">0 ن</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span>💡</span>
+              <span>المفكرون:</span>
+              <span id="scoreBadge-3" class="bg-purple-500 text-white px-3.5 py-0.5 rounded-full font-black text-sm shadow">0 ن</span>
+            </div>
+          </div>
+
+          <!-- Main game arena board -->
+          <div id="gameArena" class="bg-slate-900 text-white rounded-3xl p-6 md:p-8 shadow-xl border-4 border-slate-700 min-h-[300px] flex flex-col justify-between">
+            <div class="text-xs text-indigo-300 font-bold" id="gameQuestionCounter">السؤال الحالي</div>
+
+            <div class="my-6 p-4 md:p-5 bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10 text-center">
+              <p id="gameQuestionText" class="text-lg md:text-2xl font-black text-emerald-400 leading-relaxed">"سؤال اللعبة"</p>
+            </div>
+
+            <!-- Choice options -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" id="gameChoicesGrid">
+              <!-- Loaded dynamically -->
+            </div>
+
+            <!-- Feedback section -->
+            <div id="gameFeedbackSection" class="hidden mt-6">
+              <!-- Loaded dynamically -->
+            </div>
+
+            <!-- Controller action -->
+            <div id="gameActionContainer" class="hidden mt-5 flex justify-end border-t border-slate-800 pt-4">
+              <button onclick="nextGameQuestion()" class="bg-yellow-400 hover:bg-yellow-300 text-slate-950 font-black px-6 py-3 rounded-xl text-xs md:text-sm shadow-md transition-all flex items-center gap-2 border-b-4 border-yellow-700">
+                <span>التحدي التالي</span>
+                <span>⬅️</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Game victory state screen -->
+          <div id="gameVictoryScreen" class="hidden bg-indigo-900 text-white rounded-3xl p-8 text-center border-4 border-indigo-400 shadow-2xl">
+            <span class="text-6xl block mb-3 animate-bounce">🏆</span>
+            <h3 class="text-2xl md:text-3xl font-black text-yellow-300 mb-2">تهانينا الحارة يا أبطال النحو!</h3>
+            <p id="victoryGroupDetailsText" class="text-sm md:text-base text-indigo-100 max-w-xl mx-auto mb-6 leading-relaxed">
+              لقد أتمت المجموعة جميع المهام اللغوية والاستكشافية بنجاح وتميز!
+            </p>
+
+            <div class="flex flex-wrap justify-center gap-4">
+              <button onclick="transitionNextGroup()" class="bg-yellow-400 hover:bg-yellow-300 text-indigo-950 font-black px-6 py-3 rounded-xl text-xs md:text-sm shadow-md flex items-center gap-1 border-b-4 border-yellow-600">
+                <span>الانتقال للمجموعة التالية 🚀</span>
+              </button>
+              <button onclick="resetActiveGroup()" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white font-black px-6 py-3 rounded-xl text-xs md:text-sm flex items-center gap-1">
+                <span>إعادة تحدي هذه المجموعة 🔄</span>
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ==================== CONCLUSION TAB (الخاتمة) ==================== -->
+      <section id="tabContent-ticket" class="tab-pane hidden space-y-6">
+        <div class="bg-white rounded-3xl p-6 sm:p-10 md:p-12 text-center space-y-8 max-w-3xl mx-auto">
+          
+          <!-- School Logo & Name -->
+          <div class="flex flex-col items-center justify-center space-y-4">
+            <div class="p-2 inline-flex items-center justify-center">
+              <svg class="h-16 sm:h-20 w-auto" viewBox="0 0 200 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="45" cy="28" r="18" fill="#58A638" />
+                <path d="M45 42C45 32 35 28 32 20C42 21 44 29 45 42Z" fill="#1C215B" />
+                <path d="M45 42C45 32 55 28 58 20C48 21 46 29 45 42Z" fill="#1C215B" />
+                <rect x="43.5" y="28" width="3" height="14" rx="1.5" fill="#1C215B" />
+                
+                <circle cx="100" cy="28" r="18" fill="#80CAEE" />
+                <path d="M91 18L99 28L91 38" stroke="#1C215B" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
+                <path d="M99 18L107 28L99 38" stroke="#1C215B" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
+
+                <circle cx="155" cy="28" r="18" fill="#F8C300" />
+                <path d="M152 10.5 C164 11 172 18 172 28 L152 28 Z" fill="#FFFFFF" />
+
+                <text x="100" y="80" text-anchor="middle" fill="#1C215B" font-family="'Cairo', sans-serif" font-weight="900" font-size="34" letter-spacing="-1">duroub</text>
+              </svg>
+            </div>
+
+            <h3 class="text-2xl sm:text-3xl font-black text-indigo-950">مدرسة دروب</h3>
+          </div>
+
+          <!-- Concise Thank-You Message -->
+          <div class="text-center space-y-5 max-w-xl mx-auto">
+            <div class="inline-flex items-center gap-2 bg-slate-100 text-slate-800 px-4 py-1.5 rounded-full text-xs font-black">
+              <span>💌</span>
+              <span>شكر وتقدير</span>
+            </div>
+
+            <p class="text-lg sm:text-2xl font-black text-slate-800 leading-relaxed">
+              وتقبلوا مني جزيل الشكر والامتنان لمدرسة دروب والقائمين عليها.
+            </p>
+
+            <p class="text-base sm:text-lg font-bold text-slate-600 leading-relaxed">
+              أتمنى أن يكون الشرح قد نال إعجابكم واستحسانكم. ✨
+            </p>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ==================== TEACHER RESULT MODAL ==================== -->
+      <div id="teacherModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div class="bg-white border-4 border-indigo-500 rounded-3xl p-6 max-w-4xl w-full shadow-2xl space-y-4 max-h-[85vh] overflow-y-auto">
+          <div class="flex items-center justify-between border-b pb-3 border-slate-100">
+            <h3 class="text-lg md:text-xl font-black text-indigo-950">جدول تقييمات وبطاقات خروج طلاب كلاس أ 📊</h3>
+            <button onclick="closeTeacherModal()" class="text-xs font-black text-slate-500 hover:text-slate-800 bg-slate-100 px-3 py-1.5 rounded-xl">إغلاق ✕</button>
+          </div>
+
+          <div class="overflow-x-auto w-full border border-slate-200 rounded-2xl shadow-inner">
+            <table class="w-full text-right text-xs border-collapse">
+              <thead>
+                <tr class="bg-indigo-950 text-white text-[11px] font-black">
+                  <th class="p-3">اسم الطالب</th>
+                  <th class="p-3">جملة السوق الخيري بالمدرسة</th>
+                  <th class="p-3">التصنيف</th>
+                  <th class="p-3">رأي الطالب بالحصة</th>
+                  <th class="p-3">الخاتمة وشكر المدرسة</th>
+                  <th class="p-3">الوقت</th>
+                </tr>
+              </thead>
+              <tbody id="teacherTableBody">
+                <!-- Submission records injected dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </main>
+
+
+
+    <!-- Script Application Logic -->
+    <script>
+      // ==========================================
+      // App State
+      // ==========================================
+      let score = parseInt(localStorage.getItem('duroub_stars') || '0');
+      let audioEnabled = localStorage.getItem('duroub_audio') !== 'false';
+      let selectedTab = 'story';
+      
+      // Story voice settings
+      let pitch = 1.6;
+      let rate = 0.85;
+      let isSpeaking = false;
+      let activeAudio = null;
+      let highlightedWordIdx = null;
+      let fallbackTriggered = false;
+      let nativeSpeechTimeoutId = null;
+
+      // Brainstorming expanded states
+      let completedBrainstorms = JSON.parse(localStorage.getItem('duroub_brainstorms') || '[]');
+
+      // Concept Lab state
+      let currentGuidedIdx = 0;
+      let guidedAnswered = false;
+      let guidedSelectedType = null;
+      let guidedCompletedList = JSON.parse(localStorage.getItem('duroub_guided') || '[]');
+
+      // Group Game states
+      let activeGroupId = 1;
+      let groupScores = { 1: 0, 2: 0, 3: 0 };
+      let groupQuestionIndices = { 1: 0, 2: 0, 3: 0 };
+      let gameAnswered = false;
+      let gameAnsweredIdx = null;
+
+      // Exit ticket Form state
+      let etSentenceType = null;
+      let etClassRating = "رائعة وممتعة جداً! 😍";
+      let etGratitudeMessage = "شكراً جزيلاً لأكاديمية دروب ومدرستنا الغالية على هذه الحصة التفاعلية الممتعة والمليئة بالتحديات والإبداع الريادي! 🏫❤️";
+      let submittedTickets = JSON.parse(localStorage.getItem('duroub_tickets') || '[]');
+      let unlockedTeacher = false;
+
+      // ==========================================
+      // Data Setup
+      // ==========================================
+      const brainstormingQuestions = [
+        {
+          id: "bq-1",
+          question: "ماذا تشاهدون في الصورة المجاورة؟ 🖼️",
+          hint: "نشاهد طفلة مجتهدة تصنع أساور ملونة وجميلة لتعرضها في يوم السوق المدرسي الخيري."
+        },
+        {
+          id: "bq-2",
+          question: "ماذا تصنع الطفلة، وكيف تسوّق لنشاطها في السوق الخيري بالمدرسة؟ 📿",
+          hint: "تصنع أساور يدوية ملونة من الخرز، وتستقبل كل طالب وطالبة بابتسامة ترحيبية!"
+        },
+        {
+          id: "bq-3",
+          question: "هل ساعدها التنظيم والابتكار على النجاح؟ 🌟",
+          hint: "نعم بالتأكيد! التنظيم والابتكار هما مفتاحا النجاح لأي طالب وطالبة ينظم نشاطه في السوق الخيري بالمدرسة."
+        }
+      ];
+
+      const interactiveNominalSentences = [
+        {
+          id: "ns-1",
+          fullText: "سارةُ مبدعةٌ.",
+          parts: [
+            { text: "سارةُ", role: "mobtada", roleArabic: "مبتدأ مرفوع وعلامة رفعه الضمة الظاهرة", explanation: "هي الاسم اللطيف المرفوع الذي ابتدأت به جملتنا الجميلة!" },
+            { text: "مبدعةٌ.", role: "khabar", roleArabic: "خبر المبتدأ مرفوع وعلامة رفعه الضمة الظاهرة", explanation: "هي الكلمة السحرية التي أخبرتنا بمعلومة رائعة عن سارة وتممت معنى الجملة!" }
+          ]
+        },
+        {
+          id: "ns-2",
+          fullText: "القمرُ مضيءٌ.",
+          parts: [
+            { text: "القمرُ", role: "mobtada", roleArabic: "مبتدأ مرفوع وعلامة رفعه الضمة الظاهرة", explanation: "هو الاسم المرفوع الذي ابتدأت به الجملة!" },
+            { text: "مضيءٌ.", role: "khabar", roleArabic: "خبر المبتدأ مرفوع وعلامة رفعه الضمة الظاهرة", explanation: "هو الاسم المرفوع الذي أخبرنا بمعلومة عن القمر وتمم به معنى الجملة!" }
+          ]
+        },
+        {
+          id: "ns-3",
+          fullText: "الأزهارُ متفتحةٌ.",
+          parts: [
+            { text: "الأزهارُ", role: "mobtada", roleArabic: "مبتدأ مرفوع وعلامة رفعه الضمة الظاهرة", explanation: "هو الاسم الذي تبدأ به الجملة الاسمية لنخبر عنه خبراً!" },
+            { text: "متفتحةٌ.", role: "khabar", roleArabic: "خبر المبتدأ مرفوع وعلامة رفعه الضمة الظاهرة", explanation: "هو الاسم الذي يخبرنا بحال الأزهار ويتمم معنى الجملة!" }
+          ]
+        }
+      ];
+
+      const interactiveVerbalSentences = [
+        {
+          id: "vs-1",
+          fullText: "تبيعُ سارةُ الأساورَ.",
+          parts: [
+            { text: "تبيعُ", role: "fe3l", roleArabic: "فعل مضارع مرفوع وعلامة رفعه الضمة الظاهرة", explanation: "يدل على حدث البيع المستمر بنشاط وحيوية الآن!" },
+            { text: "سارةُ", role: "fa3el", roleArabic: "فاعل مرفوع وعلامة رفعه الضمة الظاهرة", explanation: "هي رائدة الأعمال الرائعة التي قامت بعملية البيع." },
+            { text: "الأساورَ.", role: "none", roleArabic: "مفعول به منصوب بالفتحة", explanation: "هي الشيء الجميل الملون الذي وقع عليه فعل البيع." }
+          ]
+        },
+        {
+          id: "vs-2",
+          fullText: "يبتكرُ الطالبُ حلًا ذكيًا.",
+          parts: [
+            { text: "يبتكرُ", role: "fe3l", roleArabic: "فعل مضارع مرفوع وعلامة رفعه الضمة الظاهرة", explanation: "يدل على التفكير الإبداعي والابتكار المستمر." },
+            { text: "الطالبُ", role: "fa3el", roleArabic: "فاعل مرفوع وعلامة رفعه الضمة الظاهرة", explanation: "هو الشخص المبدع والمفكر الذي قام بابتكار الفكرة." },
+            { text: "حلًا ذكيًا.", role: "none", roleArabic: "مفعول به ونعت منصوبان بالفتحة", explanation: "هو الناتج العبقري المبتكر للتغلب على التحديات." }
+          ]
+        },
+        {
+          id: "vs-3",
+          fullText: "نظّمَ الفريقُ العملَ.",
+          parts: [
+            { text: "نظّمَ", role: "fe3l", roleArabic: "فعل ماضٍ مبني على الفتح الظاهر", explanation: "حدث يدل على الترتيب والتعاون والتنظيم الذي حدث واكتمل بنجاح!" },
+            { text: "الفريقُ", role: "fa3el", roleArabic: "فاعل مرفوع وعلامة رفعه الضمة الظاهرة", explanation: "هم أعضاء المجموعة المتعاونون الذين قاموا بالتنظيم والعمل الجماعي." },
+            { text: "العملَ.", role: "none", roleArabic: "مفعول به منصوب وعلامة نصبه الفتحة", explanation: "هو المهام والمسؤوليات التي تم ترتيبها بنجاح." }
+          ]
+        }
+      ];
+
+      const guidedPracticeQuestions = [
+        {
+          text: "صمّمَ الأطفالُ لعبةً مبتكرةً.",
+          correctType: "verbal",
+          explanation: "جملة فعلية لأنها تبدأ بكلمة (صمّمَ) وهي فعل ماضٍ يدل على الابتكار والصنع."
+        },
+        {
+          text: "التاجرُ الذكيُّ يربحُ في السوقِ.",
+          correctType: "nominal",
+          explanation: "جملة اسمية لأنها تبدأ بكلمة (التاجرُ) وهي اسم معرف بـ (الـ) التعريفية."
+        },
+        {
+          text: "أطلقتْ هبةُ خطتَها التسويقيةَ.",
+          correctType: "verbal",
+          explanation: "جملة فعلية لأنها تبدأ بكلمة (أطلقتْ) وهي فعل يدل على بدء الحملة التسويقية."
+        },
+        {
+          text: "الطلابُ مسرورون بالسوقِ الخيريِّ.",
+          correctType: "nominal",
+          explanation: "جملة اسمية تبدأ بكلمة (الطلابُ) وهي اسم يدل على الطلاب السعداء في السوق الخيري بالمدرسة."
+        }
+      ];
+
+      // GROUP CHALLENGE - The 6 requested questions distributed perfectly!
+      const groupChallenges = [
+        {
+          groupId: 1,
+          groupName: "المجموعة ١: فريق المستكشفين 🚀",
+          groupSubtitle: "أبطال استكشاف بنية الجملة النحوية",
+          icon: "🚀",
+          themeColor: "emerald",
+          questions: [
+            {
+              id: "q-1-1",
+              text: "الرجلُ كريمٌ.",
+              options: [
+                { text: "جملة اسمية", isCorrect: true, explain: "أصبت! الجملة تبدأ بالاسم (الرجلُ)، لذا فهي جملة اسمية." },
+                { text: "جملة فعلية", isCorrect: false, explain: "انتبهوا! الجملة تبدأ بـ (الرجلُ) وهو اسم صريح، وليست فعلية." }
+              ]
+            },
+            {
+              id: "q-1-2",
+              text: "حَلَق الطائرُ عاليًا.",
+              options: [
+                { text: "جملة اسمية", isCorrect: false, explain: "ركزوا! الجملة تبدأ بـ (حَلَق) وهي فعل ماضٍ، وليست اسماً." },
+                { text: "جملة فعلية", isCorrect: true, explain: "ممتاز! بدأت بالفعل (حَلَقَ)، لذا فهي جملة فعلية بامتياز." }
+              ]
+            }
+          ]
+        },
+        {
+          groupId: 2,
+          groupName: "المجموعة ٢: فريق المبدعين 🎨",
+          groupSubtitle: "رواد تحويل وتصميم التراكيب اللغوية",
+          icon: "🎨",
+          themeColor: "amber",
+          questions: [
+            {
+              id: "q-2-1",
+              text: "الصلاة راحةٌ.",
+              options: [
+                { text: "جملة اسمية", isCorrect: true, explain: "رائع! الجملة تبدأ بالاسم (الصلاة)، لذا فهي جملة اسمية مباركة." },
+                { text: "جملة فعلية", isCorrect: false, explain: "انتبهوا! الكلمة الأولى هي (الصلاة) وهي اسم صريح يبدأ بـ (الـ)، وليست فعلاً." }
+              ]
+            },
+            {
+              id: "q-2-2",
+              text: "فتح أحمدُ البابَ.",
+              options: [
+                { text: "جملة اسمية", isCorrect: false, explain: "فكروا مجدداً! الجملة تبدأ بـ (فتحَ) وهي فعل ماضٍ يدل على العمل." },
+                { text: "جملة فعلية", isCorrect: true, explain: "بطل النحو! بدأت بالفعل الماضي (فتحَ)، لذا فهي جملة فعلية." }
+              ]
+            }
+          ]
+        },
+        {
+          groupId: 3,
+          groupName: "المجموعة ٣: فريق المفكرين 💡",
+          groupSubtitle: "عباقرة الإعراب وتدقيق الحركات الإعرابية",
+          icon: "💡",
+          themeColor: "purple",
+          questions: [
+            {
+              id: "q-3-1",
+              text: "الشمسُ ساطعةٌ.",
+              options: [
+                { text: "جملة اسمية", isCorrect: true, explain: "أنت عبقري بحق! الجملة تبدأ بالاسم المعرف بالـ (الشمسُ)، لذا فهي جملة اسمية." },
+                { text: "جملة فعلية", isCorrect: false, explain: "ركزوا! الكلمة الأولى هي (الشمسُ) وهي اسم، وليست فعلاً." }
+              ]
+            },
+            {
+              id: "q-3-2",
+              text: "حَصَدَ المزارعُ القمحَ.",
+              options: [
+                { text: "جملة اسمية", isCorrect: false, explain: "انتبهوا! الكلمة الأولى هي (حَصَدَ) وهي فعل ماضٍ يدل على الجني والعمل." },
+                { text: "جملة فعلية", isCorrect: true, explain: "مبدع! بدأت بالفعل الماضي (حَصَدَ)، لذا فهي جملة فعلية متميزة." }
+              ]
+            }
+          ]
+        }
+      ];
+
+      const gratitudePresets = [
+        "شكراً جزيلاً لأكاديمية دروب ومدرستنا الغالية على هذه الحصة التفاعلية الممتعة والمليئة بالتحديات والإبداع الريادي! 🏫❤️",
+        "ممتن/ة جداً لمعلمتي الرائعة ومدرستنا الحبيبة وأكاديمية دروب التي تعلمني كيف أكون مبتكراً وقائداً في المستقبل! ✨🌟",
+        "بفضل الله ثم بفضل مدرستي وأكاديمية دروب، تعلمتُ النحو بطريقة ذكية وعملية سأطبقها في مشاريعي القادمة! 🚀💼"
+      ];
+
+      const classRatings = [
+        "رائعة وممتعة جداً! 😍",
+        "مليئة بالإبداع والتحدي! 💡",
+        "أحببتها وأريد المزيد! 🚀"
+      ];
+
+      const storyText = "لاحظت سارةُ أن صديقاتها يُحببن الأساور الملوّنة، فقررت أن تصنع أساور جميلة وتبيعها في السوق الخيري بالمدرسة. كتبت لافتة جذّابة وبدأت تبتسم لكل طالب وطالبة!";
+      const storyWords = storyText.split(" ");
+
+      // Precalculate word char offsets for highlighting
+      const wordStarts = [];
+      let currentOffset = 0;
+      storyWords.forEach(w => {
+        const index = storyText.indexOf(w, currentOffset);
+        wordStarts.push(index);
+        currentOffset = index + w.length;
+      });
+
+      // ==========================================
+      // Sound Synthesizer Engine
+      // ==========================================
+      function playPitchSound(freq, duration = 0.1, type = "sine") {
+        if (!audioEnabled) return;
+        try {
+          const ctx = new (window.AudioContext || window.webkitAudioContext)();
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = type;
+          osc.frequency.setValueAtTime(freq, ctx.currentTime);
+          gain.gain.setValueAtTime(0.15, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + duration);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start();
+          osc.stop(ctx.currentTime + duration);
+        } catch (e) {}
+      }
+
+      function playCorrectSound() {
+        playPitchSound(523.25, 0.1); // C5
+        setTimeout(() => playPitchSound(659.25, 0.1), 80); // E5
+        setTimeout(() => playPitchSound(783.99, 0.2), 160); // G5
+      }
+
+      function playWrongSound() {
+        playPitchSound(220, 0.25, "sawtooth");
+      }
+
+      function playFanfareSound() {
+        [400, 500, 600, 800].forEach((f, i) => {
+          setTimeout(() => playPitchSound(f, 0.2), i * 110);
+        });
+      }
+
+      function playLevelUpSound() {
+        [523, 659, 783, 1046].forEach((f, i) => {
+          setTimeout(() => playPitchSound(f, 0.15), i * 100);
+        });
+      }
+
+      // ==========================================
+      // General State Handlers
+      // ==========================================
+      function updateScoreUI() {
+        const globalStarsEl = document.getElementById('globalStars');
+        if (globalStarsEl) {
+          globalStarsEl.innerText = score;
+        }
+        localStorage.setItem('duroub_stars', score);
+        
+        // Show leadership badge if score exceeds 100 points
+        const badge = document.getElementById('badgeIndicator');
+        if (badge) {
+          if (score >= 100) {
+            badge.classList.remove('hidden');
+            badge.classList.add('flex');
+          } else {
+            badge.classList.remove('flex');
+            badge.classList.add('hidden');
+          }
+        }
+      }
+
+      function addStars(amount) {
+        score += amount;
+        updateScoreUI();
+      }
+
+      function toggleAudio() {
+        audioEnabled = !audioEnabled;
+        localStorage.setItem('duroub_audio', audioEnabled);
+        const soundIconEl = document.getElementById('soundIcon');
+        if (soundIconEl) {
+          soundIconEl.innerText = audioEnabled ? '🔊' : '🔇';
+        }
+        playPitchSound(440, 0.08);
+      }
+
+      function switchTab(tabId) {
+        selectedTab = tabId;
+        playPitchSound(350, 0.05);
+
+        // Update tab buttons style
+        const tabs = ['story', 'lab', 'game', 'ticket'];
+        const tabConfigs = {
+          story: { active: "bg-indigo-600 text-white border-indigo-400 shadow-md scale-102", inactive: "bg-indigo-50/65 text-indigo-900 border-indigo-200 hover:bg-indigo-100/70" },
+          lab: { active: "bg-amber-500 text-white border-amber-400 shadow-md scale-102", inactive: "bg-amber-50/65 text-amber-900 border-amber-200 hover:bg-amber-100/70" },
+          game: { active: "bg-rose-500 text-white border-rose-400 shadow-md scale-102", inactive: "bg-rose-50/65 text-rose-900 border-rose-200 hover:bg-rose-100/70" },
+          ticket: { active: "bg-sky-600 text-white border-sky-400 shadow-md scale-102", inactive: "bg-sky-50/65 text-sky-900 border-sky-200 hover:bg-sky-100/70" }
+        };
+
+        tabs.forEach(t => {
+          const btn = document.getElementById(`tabBtn-${t}`);
+          if (btn) {
+            const baseClass = "px-5 py-3.5 rounded-2xl border-2 font-black text-xs md:text-sm transition-all duration-200 transform flex items-center gap-2 cursor-pointer";
+            const config = tabConfigs[t];
+            const extraClass = (t === tabId) ? config.active : config.inactive;
+            btn.className = `${baseClass} ${extraClass}`;
+          }
+        });
+
+        // Toggle visibility
+        tabs.forEach(t => {
+          const content = document.getElementById(`tabContent-${t}`);
+          if (t === tabId) {
+            content.classList.remove('hidden');
+          } else {
+            content.classList.add('hidden');
+          }
+        });
+
+        // Trigger tab load initializers
+        if (tabId === 'story') {
+          renderStoryWords();
+        } else if (tabId === 'lab') {
+          renderLabSentences();
+          renderGuidedQuestion();
+        } else if (tabId === 'game') {
+          renderGroupGameArena();
+        } else if (tabId === 'ticket') {
+          initExitTicketTab();
+        }
+      }
+
+      // ==========================================
+      // Tab 0.5: Noun vs Verb Game Logic (الصف الثالث)
+      // ==========================================
+      const nounVerbQuestions = [
+        { word: "سارةُ", type: "noun", explanation: "اسم رائع! يدل على علم (إنسان) ويقبل التنوين والـ التعريف." },
+        { word: "تَصْنَعُ", type: "verb", explanation: "فعل ممتاز! يدل على حدث وعمل مستمر (صناعة الأساور) ولا يقبل الـ التعريف." },
+        { word: "أساورَ", type: "noun", explanation: "اسم صحيح! يدل على شيء مادي جماد، ويقبل الـ التعريف (الأساور)." },
+        { word: "تَبْتَسِمُ", type: "verb", explanation: "فعل بطل! يدل على حركة الابتسام والسرور في الوقت الحاضر." },
+        { word: "المدرسةِ", type: "noun", explanation: "اسم عظيم! يدل على مكان ويبدأ بـ (الـ) التعريف، ويقبل التنوين." },
+        { word: "كَتَبَتْ", type: "verb", explanation: "فعل متميز! يدل على عمل الكتابة الذي حدث وانتهى في الماضي." },
+        { word: "لافتةً", type: "noun", explanation: "اسم رائع! ينتهي بالتنوين والتاء المربوطة ويقبل الـ التعريف (اللافتة)." },
+        { word: "تبيعُ", type: "verb", explanation: "فعل بطل! يدل على نشاط البيع والحركة، ولا يقبل الـ التعريف." }
+      ];
+      let nvCurrentIndex = 0;
+      let nvScore = 0;
+
+      function initNounVerbGame() {
+        nvCurrentIndex = Math.floor(Math.random() * nounVerbQuestions.length);
+        updateNounVerbGameUI();
+        initBasketGame();
+      }
+
+      function updateNounVerbGameUI() {
+        const currentQ = nounVerbQuestions[nvCurrentIndex];
+        const wordEl = document.getElementById('nvQuestionWord');
+        const scoreEl = document.getElementById('nvScore');
+        if (wordEl) {
+          wordEl.innerText = currentQ.word;
+          wordEl.classList.remove('animate-pulse');
+          void wordEl.offsetWidth; // trigger reflow
+          wordEl.classList.add('animate-pulse');
+        }
+        if (scoreEl) {
+          scoreEl.innerText = nvScore;
+        }
+      }
+
+      function checkNounVerbAnswer(userAnswer) {
+        const currentQ = nounVerbQuestions[nvCurrentIndex];
+        const feedbackEl = document.getElementById('nvFeedbackText');
+        const gameCardEl = document.getElementById('nounVerbGameCard');
+        
+        if (userAnswer === currentQ.type) {
+          nvScore += 5;
+          addStars(5);
+          playCorrectSound();
+          
+          if (feedbackEl) {
+            feedbackEl.innerText = `✅ رائع! ${currentQ.explanation} (+5 نجوم)`;
+            feedbackEl.className = "font-black text-emerald-600 text-[11px] animate-bounce";
+          }
+          if (gameCardEl) {
+            gameCardEl.className = "bg-emerald-50 border-2 border-emerald-300 rounded-2xl p-4 text-center space-y-3 transition-all duration-300";
+          }
+          
+          if (typeof confetti === 'function') {
+            confetti({
+              particleCount: 40,
+              spread: 60,
+              origin: { y: 0.8 }
+            });
+          }
+        } else {
+          playWrongSound();
+          if (feedbackEl) {
+            feedbackEl.innerText = `❌ انتبهوا! هذه ليست الإجابة الصحيحة. حاولوا مجدداً!`;
+            feedbackEl.className = "font-black text-red-500 text-[11px] animate-pulse";
+          }
+          if (gameCardEl) {
+            gameCardEl.className = "bg-rose-50 border-2 border-rose-200 rounded-2xl p-4 text-center space-y-3 transition-all duration-300";
+          }
+        }
+        
+        setTimeout(() => {
+          nvCurrentIndex = (nvCurrentIndex + 1) % nounVerbQuestions.length;
+          updateNounVerbGameUI();
+          if (gameCardEl) {
+            gameCardEl.className = "bg-slate-50 border-2 border-slate-100 rounded-2xl p-4 text-center space-y-3 transition-all duration-300";
+          }
+          if (feedbackEl) {
+            feedbackEl.className = "font-black text-indigo-600 text-[11px]";
+            feedbackEl.innerText = "رائع! دعنا نصنّف الكلمة التالية:";
+          }
+        }, 3000);
+      }
+
+      // ==========================================
+      // Tab 0.6: Noun & Verb Distinction Lab (الصف الثالث)
+      // ==========================================
+      const scanDatabase = {
+        "سارةُ": { type: "noun", s1: "الـ + سارة = السارة (مقبول في لغتنا!) ✅", s2: "سارةٌ (تنتهي بالتنوين والتاء المربوطة!) ✅", s3: "لا تدل على زمن، بل تدل على إنسان ثابت. 👤", result: "اسم (علم لشخص)" },
+        "تَصْنَعُ": { type: "verb", s1: "الـ + تصنع = الـتصنع ❌ غير مقبول لغوياً!", s2: "تصنعٌ ❌ لا تقبل التنوين أبداً!", s3: "تدل على عمل وهو صناعة الأساور في الزمن الحاضر! 🏃‍♂️", result: "فعل مضارع" },
+        "أساورَ": { type: "noun", s1: "الـ + أساور = الأساور (مقبول وممتاز!) ✅", s2: "أساورٌ (تقبل التنوين!) ✅", s3: "لا تدل على زمن، بل شيء جماد نلمسه باليد. 👤", result: "اسم جماد" },
+        "تَبْتَسِمُ": { type: "verb", s1: "الـ + تبتسم = الـتبتسم ❌ غير مقبول لغوياً!", s2: "تبتسمٌ ❌ لا تقبل التنوين!", s3: "تدل على حركة مبهجة (الابتسام) في الحاضر! 🏃‍♂️", result: "فعل مضارع" },
+        "المدرسةِ": { type: "noun", s1: "تبدأ بالفعل بـ (الـ) التعريف! ✅", s2: "مدرسةٌ (تنتهي بالتاء المربوطة والتنوين!) ✅", s3: "لا تدل على زمن، بل تدل على مكان للعلم والريادة. 👤", result: "اسم مكان" },
+        "تَبِيعُ": { type: "verb", s1: "الـ + تبيع = الـتبيع ❌ غير مقبول لغوياً!", s2: "تبيعٌ ❌ لا تقبل التنوين!", s3: "تدل على نشاط ريادي وعمل مستمر الآن! 🏃‍♂️", result: "فعل مضارع" }
+      };
+
+      function scanWord(word) {
+        playPitchSound(400, 0.05);
+        setTimeout(() => playPitchSound(600, 0.05), 100);
+        setTimeout(() => playPitchSound(800, 0.08), 200);
+
+        const step1 = document.getElementById("scanStep1");
+        const step2 = document.getElementById("scanStep2");
+        const step3 = document.getElementById("scanStep3");
+        const status1 = document.getElementById("scanStatus1");
+        const status2 = document.getElementById("scanStatus2");
+        const status3 = document.getElementById("scanStatus3");
+        const panel = document.getElementById("scanResultPanel");
+
+        if (!step1 || !step2 || !step3 || !panel) return;
+
+        // Reset display
+        step1.className = "flex items-center justify-between opacity-40";
+        step2.className = "flex items-center justify-between opacity-40";
+        step3.className = "flex items-center justify-between opacity-40";
+        status1.innerText = "جاري الفحص...";
+        status2.innerText = "في الانتظار...";
+        status3.innerText = "في الانتظار...";
+        panel.className = "text-center mt-2 pt-2 border-t border-slate-800 font-black text-sm text-yellow-400 animate-pulse";
+        panel.innerText = `⚙️ جاري فحص الكلمة [ ${word} ] في مختبر النحو الذكي...`;
+
+        let data = scanDatabase[word];
+        if (!data) {
+          const hasAl = word.startsWith("ال") || word.startsWith("لل");
+          const hasTa = word.endsWith("ة") || word.endsWith("ةٌ") || word.endsWith("ةً") || word.endsWith("ةٍ") || word.includes("ة");
+          const hasTanween = word.includes("ً") || word.includes("ٌ") || word.includes("ٍ") || word.endsWith("ا");
+          const isNoun = hasAl || hasTa || hasTanween;
+
+          data = {
+            type: isNoun ? "noun" : "verb",
+            s1: hasAl ? "موجود بالفعل بـ الـ التعريف! ✅" : `هل يقبل الـ؟ (الـ + ${word} = ال${word}) 🤔 يبدو مقبولاً كاسم!`,
+            s2: hasTa || hasTanween ? "تنتهي بعلامة التنوين أو التاء المربوطة السحرية! ✅" : `هل يقبل التنوين؟ (${word}ٌ) 🤔`,
+            s3: isNoun ? "لا يدل على زمن محدد، بل على ذات أو شيء ثابت. 👤" : "يدل على نشاط، عمل، أو حركة تحدث في زمن معين! 🏃‍♂️",
+            result: isNoun ? "اسم (Noun)" : "فعل (Verb)"
+          };
+        }
+
+        setTimeout(() => {
+          step1.className = "flex items-center justify-between opacity-100 text-cyan-400";
+          status1.innerText = data.s1;
+          playPitchSound(500, 0.05);
+        }, 600);
+
+        setTimeout(() => {
+          step2.className = "flex items-center justify-between opacity-100 text-cyan-400";
+          status2.innerText = data.s2;
+          playPitchSound(600, 0.05);
+        }, 1200);
+
+        setTimeout(() => {
+          step3.className = "flex items-center justify-between opacity-100 text-cyan-400";
+          status3.innerText = data.s3;
+          playPitchSound(700, 0.05);
+        }, 1800);
+
+        setTimeout(() => {
+          panel.classList.remove('animate-pulse');
+          if (data.type === "noun") {
+            panel.className = "text-center mt-2 pt-2 border-t border-slate-800 font-black text-sm text-emerald-400 animate-bounce";
+            panel.innerHTML = `🌟 النتيجة السحرية: الكلمة [ ${word} ] هي <span class="underline decoration-wavy decoration-emerald-400">اسم (Noun)</span>! 👤`;
+            playCorrectSound();
+          } else {
+            panel.className = "text-center mt-2 pt-2 border-t border-slate-800 font-black text-sm text-amber-400 animate-bounce";
+            panel.innerHTML = `⚡ النتيجة السحرية: الكلمة [ ${word} ] هي <span class="underline decoration-wavy decoration-amber-400">فعل (Verb)</span>! 🏃‍♂️`;
+            playCorrectSound();
+          }
+        }, 2400);
+      }
+
+      function scanCustomWord() {
+        const input = document.getElementById("customWordInput");
+        if (!input || !input.value.trim()) {
+          alert("الرجاء كتابة كلمة أولاً في المربع!");
+          return;
+        }
+        scanWord(input.value.trim());
+      }
+
+      const initialBasketPool = [
+        { id: 1, word: "سارةُ", type: "noun" },
+        { id: 2, word: "تَصْنَعُ", type: "verb" },
+        { id: 3, word: "أساورَ", type: "noun" },
+        { id: 4, word: "تَبْتَسِمُ", type: "verb" },
+        { id: 5, word: "المدرسةِ", type: "noun" },
+        { id: 6, word: "تَبِيعُ", type: "verb" },
+        { id: 7, word: "خيوطٌ", type: "noun" },
+        { id: 8, word: "يُرَحِّبُ", type: "verb" },
+        { id: 9, word: "فكرةٌ", type: "noun" },
+        { id: 10, word: "يَرْبَحُ", type: "verb" }
+      ];
+      let activeBasketPool = [...initialBasketPool];
+      let activeBasketWord = null;
+      let basketGameScore = 0;
+
+      function initBasketGame() {
+        activeBasketPool = [...initialBasketPool];
+        activeBasketWord = null;
+        renderBasketGameUI();
+      }
+
+      function renderBasketGameUI() {
+        const poolEl = document.getElementById("sortingWordPool");
+        const scoreEl = document.getElementById("sortingBasketScore");
+        const statusEl = document.getElementById("sortingGameStatus");
+        
+        if (scoreEl) {
+          scoreEl.innerText = basketGameScore;
+        }
+
+        if (!poolEl) return;
+        poolEl.innerHTML = "";
+
+        if (activeBasketPool.length === 0) {
+          poolEl.innerHTML = `
+            <div class="text-center w-full space-y-2 py-4">
+              <p class="text-emerald-600 font-black text-sm">🎉 مبارك! لقد صَنفت جميع الكلمات بنجاح خارق!</p>
+              <button onclick="resetBasketGame()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-black px-4 py-2 rounded-xl text-xs shadow transition duration-150 transform active:scale-95 cursor-pointer">إعادة التحدي والمرح 🔄</button>
+            </div>
+          `;
+          if (statusEl) {
+            statusEl.className = "bg-emerald-50 p-2.5 rounded-xl border border-emerald-200 text-center text-xs font-black text-emerald-900";
+            statusEl.innerText = "لقد حصلت على وسام فرسان النحو الصغار! 🎖️ (+25 نجمة للفصل!)";
+          }
+          return;
+        }
+
+        activeBasketPool.forEach((item) => {
+          const btn = document.createElement("button");
+          const isSelected = activeBasketWord && activeBasketWord.id === item.id;
+          btn.className = `px-3.5 py-2.5 rounded-xl font-black text-xs transition duration-200 cursor-pointer transform active:scale-95 shadow-sm border-2 ${
+            isSelected 
+              ? "bg-indigo-600 border-indigo-400 text-white scale-105 animate-pulse" 
+              : "bg-slate-50 border-slate-200 text-slate-800 hover:bg-indigo-50/50 hover:border-indigo-200"
+          }`;
+          btn.innerText = item.word;
+          btn.onclick = () => selectBasketWord(item);
+          poolEl.appendChild(btn);
+        });
+      }
+
+      function selectBasketWord(item) {
+        activeBasketWord = item;
+        playPitchSound(600, 0.08);
+        renderBasketGameUI();
+        
+        const statusEl = document.getElementById("sortingGameStatus");
+        if (statusEl) {
+          statusEl.className = "bg-indigo-50 p-2.5 rounded-xl border border-indigo-100 text-center text-[11px] font-black text-indigo-950 animate-pulse";
+          statusEl.innerText = `الكلمة النشطة الآن هي: [ ${item.word} ]. اضغط على سلة الأسماء 👤 أو سلة الأفعال 🏃‍♂️ لتصنيفها!`;
+        }
+      }
+
+      function sortActiveWord(basketType) {
+        const statusEl = document.getElementById("sortingGameStatus");
+        if (!activeBasketWord) {
+          playWrongSound();
+          if (statusEl) {
+            statusEl.className = "bg-rose-50 p-2.5 rounded-xl border border-rose-200 text-center text-xs font-black text-rose-950";
+            statusEl.innerText = "الرجاء الضغط على أي كلمة من البطاقات بالأعلى أولاً لتنشيطها! 👆";
+          }
+          return;
+        }
+
+        if (activeBasketWord.type === basketType) {
+          basketGameScore += 10;
+          addStars(5);
+          playCorrectSound();
+          
+          if (typeof confetti === 'function') {
+            confetti({
+              particleCount: 30,
+              spread: 50,
+              origin: { y: 0.85 }
+            });
+          }
+
+          const correctWord = activeBasketWord.word;
+          activeBasketPool = activeBasketPool.filter(item => item.id !== activeBasketWord.id);
+          activeBasketWord = null;
+
+          if (activeBasketPool.length === 0) {
+            basketGameScore += 50;
+            addStars(20);
+          }
+
+          renderBasketGameUI();
+
+          if (statusEl) {
+            statusEl.className = "bg-emerald-50 p-2.5 rounded-xl border border-emerald-200 text-center text-[11px] font-black text-emerald-900";
+            statusEl.innerText = `✅ رائع ومبدع! الكلمة "${correctWord}" صُنّفت بنجاح في مكانها الصحيح! (+5 نجوم)`;
+          }
+        } else {
+          playWrongSound();
+          if (statusEl) {
+            statusEl.className = "bg-rose-50 p-2.5 rounded-xl border border-rose-200 text-center text-[11px] font-black text-rose-950";
+            statusEl.innerText = `❌ انتبهوا! الكلمة "${activeBasketWord.word}" لا تنتمي إلى هذه السلة. فكّروا في علاماتها السحرية! 🤔`;
+          }
+        }
+      }
+
+      function resetBasketGame() {
+        basketGameScore = 0;
+        initBasketGame();
+      }
+
+      // ==========================================
+      // Tab 1: Story Logic
+      // ==========================================
+      function renderStoryWords() {
+        const p = document.getElementById('storyParagraph');
+        p.innerHTML = '';
+        storyWords.forEach((word, idx) => {
+          const span = document.createElement('span');
+          span.id = `storyWord-${idx}`;
+          span.className = "transition-all duration-150 rounded px-1.5 py-0.5 inline-block cursor-pointer hover:text-indigo-600";
+          
+          if (word === "سارةُ") {
+            span.innerHTML = `<span class="bg-purple-100 text-purple-900 border border-purple-200 px-2 py-0.5 rounded-lg font-black inline-block">سارةُ</span>`;
+          } else {
+            span.innerText = word;
+          }
+
+          span.onclick = () => {
+            playPitchSound(400 + idx * 10, 0.08);
+          };
+
+          p.appendChild(span);
+          p.appendChild(document.createTextNode(' '));
+        });
+
+        // Also render brainstorms
+        renderBrainstorms();
+      }
+
+      function renderBrainstorms() {
+        const container = document.getElementById('brainstormContainer');
+        container.innerHTML = '';
+        brainstormingQuestions.forEach((bq, idx) => {
+          const wrapper = document.createElement('div');
+          wrapper.className = "border rounded-2xl bg-white border-slate-200 overflow-hidden p-4 flex items-center gap-2.5";
+          
+          const starIcon = document.createElement('span');
+          starIcon.className = "w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs bg-indigo-100 text-indigo-700 shrink-0";
+          starIcon.innerText = idx + 1;
+          
+          const qText = document.createElement('span');
+          qText.className = "leading-snug text-right font-black text-xs md:text-sm text-slate-800";
+          qText.innerText = bq.question;
+          
+          wrapper.appendChild(starIcon);
+          wrapper.appendChild(qText);
+          container.appendChild(wrapper);
+        });
+      }
+
+      function toggleBrainstorm(id) {
+        const isCompleted = completedBrainstorms.includes(id);
+        const box = document.getElementById(`brainstormBox-${id}`);
+        const hint = document.getElementById(`hint-${id}`);
+        const chev = document.getElementById(`chevron-${id}`);
+        
+        if (hint.classList.contains('hidden')) {
+          hint.classList.remove('hidden');
+          if (chev) chev.innerText = "▲";
+          box.classList.add('border-indigo-300', 'shadow-sm');
+          playPitchSound(440, 0.08);
+          
+          // Reward score
+          if (!isCompleted) {
+            completedBrainstorms.push(id);
+            localStorage.setItem('duroub_brainstorms', JSON.stringify(completedBrainstorms));
+            addStars(5);
+            playCorrectSound();
+            renderBrainstorms();
+            // keep open
+            const nextHint = document.getElementById(`hint-${id}`);
+            const nextChev = document.getElementById(`chevron-${id}`);
+            const nextBox = document.getElementById(`brainstormBox-${id}`);
+            nextHint.classList.remove('hidden');
+            if (nextChev) nextChev.innerText = "▲";
+            nextBox.classList.add('border-indigo-300', 'shadow-sm');
+          }
+        } else {
+          hint.classList.add('hidden');
+          if (chev) chev.innerText = "▼";
+          box.classList.remove('border-indigo-300', 'shadow-sm');
+          playPitchSound(380, 0.05);
+        }
+      }
+
+      function updateSpeechSettings() {
+        pitch = parseFloat(document.getElementById('speechPitch').value);
+        rate = parseFloat(document.getElementById('speechRate').value);
+        document.getElementById('pitchVal').innerText = pitch.toFixed(1);
+        document.getElementById('rateVal').innerText = rate.toFixed(2) + 'x';
+      }
+
+      let highlightInterval = null;
+
+      let storyAudio = null;
+      let isAudioPlaying = false;
+      let isAudioPaused = false;
+
+      function updateAudioBtnUI(state) {
+        const btn = document.getElementById('storyVoiceBtn');
+        const textEl = document.getElementById('storyVoiceText');
+        const iconEl = document.getElementById('storyVoiceIcon');
+
+        if (state === 'playing') {
+          if (btn) btn.className = "px-6 py-3.5 rounded-2xl font-black text-sm md:text-base inline-flex items-center justify-center gap-3 transition transform active:scale-95 shadow-md bg-amber-500 hover:bg-amber-600 text-white cursor-pointer min-w-[150px]";
+          if (textEl) textEl.innerText = "إيقاف مؤقت";
+          if (iconEl) iconEl.innerText = "⏸️";
+        } else if (state === 'paused') {
+          if (btn) btn.className = "px-6 py-3.5 rounded-2xl font-black text-sm md:text-base inline-flex items-center justify-center gap-3 transition transform active:scale-95 shadow-md bg-indigo-600 hover:bg-indigo-700 text-white cursor-pointer min-w-[150px]";
+          if (textEl) textEl.innerText = "استئناف التشغيل";
+          if (iconEl) iconEl.innerText = "▶️";
+        } else {
+          if (btn) btn.className = "px-6 py-3.5 rounded-2xl font-black text-sm md:text-base inline-flex items-center justify-center gap-3 transition transform active:scale-95 shadow-md bg-indigo-600 hover:bg-indigo-700 text-white cursor-pointer min-w-[150px]";
+          if (textEl) textEl.innerText = "تشغيل القصة";
+          if (iconEl) iconEl.innerText = "▶️";
+        }
+      }
+
+      function stopSpeech() {
+        if (storyAudio) {
+          try { storyAudio.pause(); } catch(e) {}
+          storyAudio.currentTime = 0;
+        }
+        if ("speechSynthesis" in window) {
+          try { window.speechSynthesis.cancel(); } catch(e) {}
+        }
+        if (highlightInterval) {
+          clearInterval(highlightInterval);
+          highlightInterval = null;
+        }
+        isAudioPlaying = false;
+        isAudioPaused = false;
+        updateAudioBtnUI('stopped');
+
+        // Clear word highlights
+        storyWords.forEach((_, idx) => {
+          const span = document.getElementById(`storyWord-${idx}`);
+          if (span) {
+            //
+          }
+        });
+      }
+
+      function toggleStoryAudio() {
+        playFanfareSound();
+        if (!storyAudio) {
+          storyAudio = new Audio('public/story.mp3');
+
+          storyAudio.onplay = () => {
+            isAudioPlaying = true;
+            isAudioPaused = false;
+            updateAudioBtnUI('playing');
+            simulateWordHighlighting();
+          };
+
+          storyAudio.onpause = () => {
+            isAudioPlaying = false;
+            isAudioPaused = true;
+            updateAudioBtnUI('paused');
+            if (highlightInterval) clearInterval(highlightInterval);
+          };
+
+          storyAudio.onended = () => {
+            stopSpeech();
+          };
+
+          storyAudio.onerror = () => {
+            console.log("Audio file story.mp3 not found.");
+            const stateText = document.getElementById('speechStateText');
+            if (stateText) stateText.innerText = "عذراً، تعذر تشغيل ملف الصوت 'story.mp3'. تأكد من رفعه بشكل صحيح.";
+            updateAudioBtnUI('stopped');
+          };
+        }
+
+        if (isAudioPlaying) {
+          storyAudio.pause();
+        } else if (isAudioPaused) {
+          storyAudio.play().catch((e) => {
+             console.error("Playback failed:", e);
+             const stateText = document.getElementById('speechStateText');
+             if (stateText) stateText.innerText = "عذراً، تعذر تشغيل ملف الصوت 'story.mp3'. تأكد من رفعه بشكل صحيح.";
+             updateAudioBtnUI('stopped');
+          });
+        } else {
+          storyAudio.play().catch((e) => {
+             console.error("Playback failed:", e);
+             const stateText = document.getElementById('speechStateText');
+             if (stateText) stateText.innerText = "عذراً، تعذر تشغيل ملف الصوت 'story.mp3'. تأكد من رفعه بشكل صحيح.";
+             updateAudioBtnUI('stopped');
+          });
+        }
+      }
+
+      function toggleSpeechPlayer() {
+        if ("speechSynthesis" in window) {
+          if (window.speechSynthesis.speaking) {
+            if (window.speechSynthesis.paused) {
+              window.speechSynthesis.resume();
+              isAudioPlaying = true;
+              isAudioPaused = false;
+              updateAudioBtnUI('playing');
+              simulateWordHighlighting();
+            } else {
+              window.speechSynthesis.pause();
+              isAudioPlaying = false;
+              isAudioPaused = true;
+              updateAudioBtnUI('paused');
+              if (highlightInterval) clearInterval(highlightInterval);
+            }
+          } else {
+            const utterance = new SpeechSynthesisUtterance(storyText);
+            utterance.lang = "ar-SA";
+            utterance.rate = 0.9;
+            utterance.pitch = 1.3;
+            
+            utterance.onend = () => {
+              stopSpeech();
+            };
+            utterance.onerror = () => {
+              stopSpeech();
+            };
+
+            isAudioPlaying = true;
+            isAudioPaused = false;
+            updateAudioBtnUI('playing');
+            simulateWordHighlighting();
+            window.speechSynthesis.speak(utterance);
+          }
+        } else {
+          if (isAudioPlaying) {
+            isAudioPlaying = false;
+            isAudioPaused = true;
+            updateAudioBtnUI('paused');
+            if (highlightInterval) clearInterval(highlightInterval);
+          } else {
+            isAudioPlaying = true;
+            isAudioPaused = false;
+            updateAudioBtnUI('playing');
+            simulateWordHighlighting();
+          }
+        }
+      }
+
+      function simulateWordHighlighting() {
+      }
+
+      function highlightWord(wordIdx) {
+      }
+      
+      // ==========================================
+      // Tab 2: Concept Lab Logic
+      // ==========================================
+      function renderLabSentences() {
+        // Render nominal cards
+        const nominalContainer = document.getElementById('nominalLabSentences');
+        nominalContainer.innerHTML = '';
+        interactiveNominalSentences.forEach((sentence) => {
+          const card = document.createElement('div');
+          card.className = "bg-white p-4 rounded-2xl border-2 border-emerald-100 shadow-sm hover:shadow transition-all text-center";
+          
+          const grid = document.createElement('div');
+          grid.className = "flex flex-wrap justify-center items-center gap-2";
+
+          sentence.parts.forEach((part) => {
+            const btn = document.createElement('button');
+            btn.className = `px-3 py-1.5 rounded-xl text-base md:text-xl font-black border transition-all duration-200 hover:scale-105 active:scale-95 ${getRoleColorClass(part.role)}`;
+            btn.innerText = part.text;
+            btn.onclick = () => selectLabPart(part, sentence.fullText);
+            grid.appendChild(btn);
+          });
+
+          card.appendChild(grid);
+          nominalContainer.appendChild(card);
+        });
+
+        // Render verbal cards
+        const verbalContainer = document.getElementById('verbalLabSentences');
+        verbalContainer.innerHTML = '';
+        interactiveVerbalSentences.forEach((sentence) => {
+          const card = document.createElement('div');
+          card.className = "bg-white p-4 rounded-2xl border-2 border-purple-100 shadow-sm hover:shadow transition-all text-center";
+          
+          const grid = document.createElement('div');
+          grid.className = "flex flex-wrap justify-center items-center gap-2";
+
+          sentence.parts.forEach((part) => {
+            const btn = document.createElement('button');
+            btn.className = `px-3 py-1.5 rounded-xl text-base md:text-xl font-black border transition-all duration-200 hover:scale-105 active:scale-95 ${getRoleColorClass(part.role)}`;
+            btn.innerText = part.text;
+            btn.onclick = () => selectLabPart(part, sentence.fullText);
+            grid.appendChild(btn);
+          });
+
+          card.appendChild(grid);
+          verbalContainer.appendChild(card);
+        });
+      }
+
+      function getRoleColorClass(role) {
+        switch (role) {
+          case "mobtada":
+            return "text-red-600 bg-red-100 hover:bg-red-200 border-red-300";
+          case "khabar":
+            return "text-blue-600 bg-blue-100 hover:bg-blue-200 border-blue-300";
+          case "fe3l":
+            return "text-emerald-700 bg-emerald-100 hover:bg-emerald-200 border-emerald-300";
+          case "fa3el":
+            return "text-purple-700 bg-purple-100 hover:bg-purple-200 border-purple-300";
+          default:
+            return "text-slate-700 bg-slate-100 hover:bg-slate-200 border-slate-300";
+        }
+      }
+
+      function selectLabPart(part, fullText) {
+        const pitchMap = {
+          mobtada: 440,
+          khabar: 494,
+          fe3l: 523,
+          fa3el: 587,
+          none: 330
+        };
+        playPitchSound(pitchMap[part.role] || 400, 0.12);
+
+        const drawer = document.getElementById('coachDrawer');
+        drawer.classList.remove('hidden');
+
+        document.getElementById('coachTitle').innerHTML = `مساعد النحو الذكي يحلل كلمة: <span class="bg-indigo-200/75 text-indigo-900 px-3 py-1 rounded-lg text-base font-black mx-1">${part.text}</span> من جملة "<i>${fullText}</i>"`;
+        
+        const badge = document.getElementById('coachBadge');
+        badge.className = `inline-block px-3 py-1.5 rounded-xl font-black text-sm ${getRoleBadgeClass(part.role)}`;
+        badge.innerText = getRoleBadgeLabel(part.role);
+
+        document.getElementById('coachRule').innerText = part.roleArabic;
+        document.getElementById('coachExplanation').innerText = part.explanation;
+      }
+
+      function getRoleBadgeClass(role) {
+        switch (role) {
+          case "mobtada": return "bg-red-500 text-white";
+          case "khabar": return "bg-blue-600 text-white";
+          case "fe3l": return "bg-emerald-600 text-white";
+          case "fa3el": return "bg-purple-600 text-white";
+          default: return "bg-slate-500 text-white";
+        }
+      }
+
+      function getRoleBadgeLabel(role) {
+        switch (role) {
+          case "mobtada": return "🔴 مبتدأ";
+          case "khabar": return "🔵 خبر المبتدأ";
+          case "fe3l": return "🟢 فعل";
+          case "fa3el": return "🟣 فاعل";
+          default: return "⚙️ ركن إضافي";
+        }
+      }
+
+      function closeCoachDrawer() {
+        document.getElementById('coachDrawer').classList.add('hidden');
+        playPitchSound(300, 0.08);
+      }
+
+      // Guided practice carousel
+      function renderGuidedQuestion() {
+        const current = guidedPracticeQuestions[currentGuidedIdx];
+        document.getElementById('guidedQuestionText').innerText = `"${current.text}"`;
+        document.getElementById('guidedProgressBadge').innerText = `المستوى: ${currentGuidedIdx + 1} من ${guidedPracticeQuestions.length}`;
+
+        // Reset elements
+        document.getElementById('guidedFeedbackContainer').classList.add('hidden');
+        document.getElementById('guidedNextBtnContainer').classList.add('hidden');
+        
+        // Reset option styles
+        document.getElementById('guidedBtn-verbal').className = "px-6 py-3.5 rounded-2xl text-sm md:text-base font-black flex items-center gap-1.5 transition transform shadow-md active:translate-y-0.5 bg-indigo-600 hover:bg-indigo-700 text-white border-b-4 border-indigo-900";
+        document.getElementById('guidedBtn-nominal').className = "px-6 py-3.5 rounded-2xl text-sm md:text-base font-black flex items-center gap-1.5 transition transform shadow-md active:translate-y-0.5 bg-emerald-500 hover:bg-emerald-600 text-white border-b-4 border-emerald-700";
+
+        guidedAnswered = false;
+        guidedSelectedType = null;
+      }
+
+      function submitGuided(type) {
+        if (guidedAnswered) return;
+        guidedAnswered = true;
+        guidedSelectedType = type;
+
+        const current = guidedPracticeQuestions[currentGuidedIdx];
+        const isCorrect = current.correctType === type;
+
+        // Apply visual feedback classes
+        const verbBtn = document.getElementById('guidedBtn-verbal');
+        const nomBtn = document.getElementById('guidedBtn-nominal');
+
+        if (isCorrect) {
+          playCorrectSound();
+          confetti({ particleCount: 45, spread: 60, origin: { y: 0.8 } });
+
+          if (type === 'verbal') {
+            verbBtn.className = "px-6 py-3.5 rounded-2xl text-sm md:text-base font-black flex items-center gap-1.5 bg-indigo-600 text-white border-2 border-indigo-300";
+            nomBtn.className = "px-6 py-3.5 rounded-2xl text-sm md:text-base font-black flex items-center gap-1.5 bg-slate-100 text-slate-400 border border-slate-200";
+          } else {
+            nomBtn.className = "px-6 py-3.5 rounded-2xl text-sm md:text-base font-black flex items-center gap-1.5 bg-emerald-600 text-white border-2 border-emerald-300";
+            verbBtn.className = "px-6 py-3.5 rounded-2xl text-sm md:text-base font-black flex items-center gap-1.5 bg-slate-100 text-slate-400 border border-slate-200";
+          }
+
+          // Add stars if not already done
+          if (!guidedCompletedList.includes(currentGuidedIdx)) {
+            guidedCompletedList.push(currentGuidedIdx);
+            localStorage.setItem('duroub_guided', JSON.stringify(guidedCompletedList));
+            addStars(10);
+          }
+        } else {
+          playWrongSound();
+          if (type === 'verbal') {
+            verbBtn.className = "px-6 py-3.5 rounded-2xl text-sm md:text-base font-black flex items-center gap-1.5 bg-rose-600 text-white border-2 border-rose-300";
+            nomBtn.className = "px-6 py-3.5 rounded-2xl text-sm md:text-base font-black flex items-center gap-1.5 bg-emerald-600 text-white border border-emerald-300";
+          } else {
+            nomBtn.className = "px-6 py-3.5 rounded-2xl text-sm md:text-base font-black flex items-center gap-1.5 bg-rose-600 text-white border-2 border-rose-300";
+            verbBtn.className = "px-6 py-3.5 rounded-2xl text-sm md:text-base font-black flex items-center gap-1.5 bg-indigo-600 text-white border border-indigo-300";
+          }
+        }
+
+        // Show feedback text
+        const feedbackContainer = document.getElementById('guidedFeedbackContainer');
+        feedbackContainer.classList.remove('hidden');
+
+        if (isCorrect) {
+          feedbackContainer.innerHTML = `
+            <div class="bg-emerald-50 border border-emerald-200 p-4 rounded-xl w-full flex items-start gap-3 text-emerald-900">
+              <span class="text-xl">✓</span>
+              <div>
+                <p class="font-black text-sm md:text-base">إجابة عبقرية! 🎉</p>
+                <p class="text-xs md:text-sm font-bold mt-1">${current.explanation}</p>
+              </div>
+            </div>
+          `;
+        } else {
+          feedbackContainer.innerHTML = `
+            <div class="bg-red-50 border border-red-200 p-4 rounded-xl w-full flex items-start gap-3 text-red-900">
+              <span class="text-xl">⚠️</span>
+              <div>
+                <p class="font-black text-sm md:text-base">تفكير جيد، ولكن حاول التركيز مجدداً! 🤔</p>
+                <p class="text-xs md:text-sm font-bold mt-1">${current.explanation}</p>
+              </div>
+            </div>
+          `;
+        }
+
+        document.getElementById('guidedNextBtnContainer').classList.remove('hidden');
+      }
+
+      function nextGuidedQuestion() {
+        playPitchSound(380, 0.08);
+        currentGuidedIdx = (currentGuidedIdx + 1) % guidedPracticeQuestions.length;
+        renderGuidedQuestion();
+      }
+
+      // ==========================================
+      // Tab 3: Group Challenges Game Logic
+      // ==========================================
+      function selectGroup(groupId) {
+        activeGroupId = groupId;
+        playPitchSound(440, 0.05);
+        gameAnswered = false;
+        gameAnsweredIdx = null;
+
+        // Toggle active span highlights
+        [1, 2, 3].forEach(id => {
+          const span = document.getElementById(`groupActiveSpan-${id}`);
+          const btn = document.getElementById(`groupBtn-${id}`);
+          if (id === groupId) {
+            span.classList.remove('hidden');
+            btn.className = "p-4 rounded-2xl border-2 text-right transition-all transform active:scale-98 shadow-sm flex items-center justify-between gap-3 bg-indigo-50 border-indigo-300 border-b-8 scale-102 ring-2 ring-indigo-300";
+          } else {
+            span.classList.add('hidden');
+            btn.className = "p-4 rounded-2xl border-2 text-right transition-all transform active:scale-98 shadow-sm flex items-center justify-between gap-3 bg-slate-50 hover:bg-slate-100 border-slate-200";
+          }
+        });
+
+        renderGroupGameArena();
+      }
+
+      function renderGroupGameArena() {
+        const group = groupChallenges.find(g => g.groupId === activeGroupId);
+        const qIdx = groupQuestionIndices[activeGroupId];
+        
+        // Update live scores
+        [1, 2, 3].forEach(id => {
+          document.getElementById(`scoreBadge-${id}`).innerText = `${groupScores[id]} ن`;
+        });
+
+        const arena = document.getElementById('gameArena');
+        const victoryScreen = document.getElementById('gameVictoryScreen');
+
+        if (qIdx < group.questions.length) {
+          arena.classList.remove('hidden');
+          victoryScreen.classList.add('hidden');
+
+          const question = group.questions[qIdx];
+          document.getElementById('gameQuestionCounter').innerText = `المجموعة ${activeGroupId} • تحدي ${qIdx + 1} من ${group.questions.length}`;
+          document.getElementById('gameQuestionText').innerText = `"${question.text}"`;
+
+          // Choices render
+          const choicesGrid = document.getElementById('gameChoicesGrid');
+          choicesGrid.innerHTML = '';
+          question.options.forEach((opt, idx) => {
+            const btn = document.createElement('button');
+            const isNominal = opt.text.includes('اسمية');
+            btn.className = `font-black py-4 px-6 rounded-2xl text-sm md:text-lg shadow-md transition-all duration-200 text-center leading-snug flex items-center justify-center gap-2 transform active:scale-98 ${isNominal ? 'bg-emerald-600 hover:bg-emerald-500 border-2 border-emerald-800' : 'bg-indigo-600 hover:bg-indigo-505 border-2 border-indigo-800'} text-white`;
+            btn.innerHTML = `<span>${isNominal ? '🏷️' : '⚡'} ${opt.text}</span>`;
+            btn.onclick = () => submitGameAnswer(idx);
+            choicesGrid.appendChild(btn);
+          });
+
+          // Reset feedback and action
+          document.getElementById('gameFeedbackSection').classList.add('hidden');
+          document.getElementById('gameActionContainer').classList.add('hidden');
+        } else {
+          // Group completed! Show Victory
+          arena.classList.add('hidden');
+          victoryScreen.classList.remove('hidden');
+          document.getElementById('victoryGroupDetailsText').innerHTML = `لقد أتمت <b>${group.groupName}</b> جميع المهام اللغوية والاستكشافية بنجاح وتميز وحصدت <b>${groupScores[activeGroupId]}</b> نقطة! 🏆`;
+          playLevelUpSound();
+        }
+      }
+
+      function submitGameAnswer(optIdx) {
+        if (gameAnswered) return;
+        gameAnswered = true;
+        gameAnsweredIdx = optIdx;
+
+        const group = groupChallenges.find(g => g.groupId === activeGroupId);
+        const qIdx = groupQuestionIndices[activeGroupId];
+        const question = group.questions[qIdx];
+        const optSelected = question.options[optIdx];
+
+        // Highlight options in UI
+        const choicesGrid = document.getElementById('gameChoicesGrid');
+        const buttons = choicesGrid.getElementsByTagName('button');
+
+        question.options.forEach((opt, idx) => {
+          if (opt.isCorrect) {
+            buttons[idx].className = "font-black py-4 px-6 rounded-2xl text-sm md:text-lg shadow-md text-white bg-emerald-600 border-2 border-emerald-300 scale-102";
+          } else if (idx === optIdx) {
+            buttons[idx].className = "font-black py-4 px-6 rounded-2xl text-sm md:text-lg shadow-md text-white bg-rose-600 border-2 border-rose-300";
+          } else {
+            buttons[idx].className = "font-black py-4 px-6 rounded-2xl text-sm md:text-lg shadow-md bg-slate-800/50 text-slate-500 border border-slate-800";
+            buttons[idx].disabled = true;
+          }
+        });
+
+        // Award scores
+        if (optSelected.isCorrect) {
+          playCorrectSound();
+          confetti({ particleCount: 65, spread: 80, origin: { y: 0.6 } });
+          groupScores[activeGroupId] += 10;
+          addStars(10);
+        } else {
+          playWrongSound();
+        }
+
+        // Render feedback box
+        const feedback = document.getElementById('gameFeedbackSection');
+        feedback.classList.remove('hidden');
+        if (optSelected.isCorrect) {
+          feedback.innerHTML = `
+            <div class="bg-emerald-950/80 border-2 border-emerald-500 p-4 rounded-xl w-full flex items-start gap-3 text-emerald-100">
+              <span class="text-xl bg-emerald-900 rounded-full p-1 leading-none">✓</span>
+              <div>
+                <p class="font-black text-sm md:text-base text-emerald-300">أحسنتم يا فرسان! إجابة مذهلة وصحيحة 🎉</p>
+                <p class="text-xs md:text-sm font-semibold mt-1 leading-relaxed">${optSelected.explain}</p>
+              </div>
+            </div>
+          `;
+        } else {
+          feedback.innerHTML = `
+            <div class="bg-rose-950/80 border-2 border-rose-500 p-4 rounded-xl w-full flex items-start gap-3 text-rose-100">
+              <span class="text-xl bg-rose-900 rounded-full p-1 leading-none">⚠️</span>
+              <div>
+                <p class="font-black text-sm md:text-base text-rose-300">ملاحظة ذكية لغوية! ركزوا في التحدي القادم 💡</p>
+                <p class="text-xs md:text-sm font-semibold mt-1 leading-relaxed">${optSelected.explain}</p>
+              </div>
+            </div>
+          `;
+        }
+
+        // Show Next button
+        document.getElementById('gameActionContainer').classList.remove('hidden');
+      }
+
+      function nextGameQuestion() {
+        playPitchSound(380, 0.08);
+        groupQuestionIndices[activeGroupId]++;
+        gameAnswered = false;
+        gameAnsweredIdx = null;
+        renderGroupGameArena();
+      }
+
+      function transitionNextGroup() {
+        const nextId = activeGroupId === 3 ? 1 : activeGroupId + 1;
+        selectGroup(nextId);
+      }
+
+      function resetActiveGroup() {
+        groupQuestionIndices[activeGroupId] = 0;
+        groupScores[activeGroupId] = 0;
+        selectGroup(activeGroupId);
+      }
+
+      // ==========================================
+      // Tab 4: Conclusion & Gratitude Logic
+      // ==========================================
+      function triggerConclusionConfetti() {
+        playFanfareSound();
+        if (typeof confetti === 'function') {
+          const duration = 2.5 * 1000;
+          const animationEnd = Date.now() + duration;
+          const defaults = { startVelocity: 35, spread: 360, ticks: 70, zIndex: 100 };
+          function randomInRange(min, max) { return Math.random() * (max - min) + min; }
+          const interval = setInterval(() => {
+            const timeLeft = animationEnd - Date.now();
+            if (timeLeft <= 0) return clearInterval(interval);
+            const particleCount = 50 * (timeLeft / duration);
+            confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } });
+            confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } });
+          }, 250);
+        }
+      }
+
+      function initExitTicketTab() {
+        playPitchSound(520, 0.1);
+        if (typeof initTeacherSectionControls === 'function') {
+          initTeacherSectionControls();
+        }
+      }
+
+      function selectRadioSentenceType(type) {
+        etSentenceType = type;
+        playPitchSound(450, 0.08);
+
+        const nomLabel = document.getElementById('etRadioLabel-nominal');
+        const verbLabel = document.getElementById('etRadioLabel-verbal');
+
+        if (type === 'nominal') {
+          nomLabel.className = "p-4 bg-emerald-50 border-2 border-emerald-500 ring-2 ring-emerald-200 rounded-2xl flex items-center justify-center gap-2 cursor-pointer font-black text-sm text-emerald-700 transition-all";
+          verbLabel.className = "p-4 bg-white border-2 border-slate-200 rounded-2xl flex items-center justify-center gap-2 cursor-pointer font-black text-sm transition-all hover:bg-slate-50";
+        } else {
+          verbLabel.className = "p-4 bg-emerald-50 border-2 border-emerald-500 ring-2 ring-emerald-200 rounded-2xl flex items-center justify-center gap-2 cursor-pointer font-black text-sm text-emerald-700 transition-all";
+          nomLabel.className = "p-4 bg-white border-2 border-slate-200 rounded-2xl flex items-center justify-center gap-2 cursor-pointer font-black text-sm transition-all hover:bg-slate-50";
+        }
+      }
+
+      function selectClassRating(rating) {
+        etClassRating = rating;
+        playPitchSound(460, 0.05);
+
+        classRatings.forEach(r => {
+          const btn = document.getElementById(`ratingBtn-${r}`);
+          if (btn) {
+            if (r === rating) {
+              btn.className = "p-3 rounded-xl border-2 font-black text-xs transition-all text-center border-pink-500 bg-pink-50 text-pink-700 shadow-sm";
+            } else {
+              btn.className = "p-3 rounded-xl border-2 font-black text-xs transition-all text-center border-slate-200 bg-white text-slate-600 hover:bg-slate-50";
+            }
+          }
+        });
+      }
+
+      function selectGratitudePreset(preset, activeIdx) {
+        etGratitudeMessage = preset;
+        playPitchSound(470, 0.06);
+
+        document.getElementById('etGratitudeText').value = preset;
+
+        gratitudePresets.forEach((_, idx) => {
+          const btn = document.getElementById(`presetBtn-${idx}`);
+          if (btn) {
+            if (idx === activeIdx) {
+              btn.className = "p-3 rounded-xl border-2 font-black text-[11px] text-right transition-all leading-relaxed border-rose-400 bg-rose-50 text-rose-900 shadow-sm";
+            } else {
+              btn.className = "p-3 rounded-xl border-2 font-black text-[11px] text-right transition-all leading-relaxed border-slate-200 bg-white text-slate-600 hover:bg-slate-50";
+            }
+          }
+        });
+      }
+
+      function submitExitTicket(event) {
+        event.preventDefault();
+        
+        const name = document.getElementById('etStudentName').value.trim();
+        const sentence = document.getElementById('etProjectSentence').value.trim();
+        const customGratitude = document.getElementById('etGratitudeText').value.trim();
+
+        if (!name || !sentence || !etSentenceType) {
+          playWrongSound();
+          alert('الرجاء تعبئة جميع الحقول المطلوبة بما في ذلك نوع جملتك النحوية!');
+          return;
+        }
+
+        // Create new ticket object
+        const newTicket = {
+          id: "et-" + Date.now(),
+          studentName: name,
+          projectSentence: sentence,
+          sentenceType: etSentenceType,
+          classRating: etClassRating,
+          gratitudeMessage: customGratitude,
+          timestamp: new Date().toLocaleTimeString("ar-SA", { hour: "2-digit", minute: "2-digit" })
+        };
+
+        // Save
+        submittedTickets.push(newTicket);
+        localStorage.setItem('duroub_tickets', JSON.stringify(submittedTickets));
+
+        addStars(25);
+        playFanfareSound();
+
+        // Confetti party
+        const duration = 2.5 * 1000;
+        const animationEnd = Date.now() + duration;
+        const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 100 };
+        function randomInRange(min, max) { return Math.random() * (max - min) + min; }
+        const interval = setInterval(() => {
+          const timeLeft = animationEnd - Date.now();
+          if (timeLeft <= 0) return clearInterval(interval);
+          const particleCount = 50 * (timeLeft / duration);
+          confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } });
+          confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } });
+        }, 250);
+
+        // Render Certificate
+        document.getElementById('exitTicketForm').classList.add('hidden');
+        document.getElementById('etCertificateScreen').classList.remove('hidden');
+
+        document.getElementById('certStudentName').innerText = name;
+        document.getElementById('certProjectSentence').innerText = `"${sentence}"`;
+        
+        const typeBadge = document.getElementById('certSentenceTypeBadge');
+        if (etSentenceType === 'nominal') {
+          typeBadge.innerText = "🏷️ جملة اسمية";
+          typeBadge.className = "inline-block mt-2 bg-emerald-100 border border-emerald-300 text-emerald-800 px-3 py-1 rounded-full text-xs font-black";
+        } else {
+          typeBadge.innerText = "⚡ جملة فعلية";
+          typeBadge.className = "inline-block mt-2 bg-purple-100 border border-purple-300 text-purple-800 px-3 py-1 rounded-full text-xs font-black";
+        }
+
+        document.getElementById('certClassRating').innerText = `رأيي في الحصة: ${etClassRating}`;
+
+        // Gratitude inside certificate
+        const certGrat = document.getElementById('certGratitudeBlock');
+        if (customGratitude) {
+          certGrat.classList.remove('hidden');
+          document.getElementById('certGratitudeMessage').innerText = `"${customGratitude}"`;
+        } else {
+          certGrat.classList.add('hidden');
+        }
+
+        // Refresh teacher list
+        renderTeacherTable();
+      }
+
+      function resetExitTicketForm() {
+        initExitTicketTab();
+      }
+
+      // Teacher Panel Locking Controls
+      function initTeacherSectionControls() {
+        const unlockForm = document.getElementById('teacherUnlockFormContainer');
+        const controlPanel = document.getElementById('teacherPanelControls');
+
+        if (unlockedTeacher) {
+          unlockForm.classList.add('hidden');
+          controlPanel.classList.remove('hidden');
+        } else {
+          unlockForm.classList.remove('hidden');
+          controlPanel.classList.add('hidden');
+          document.getElementById('teacherPassError').classList.add('hidden');
+          document.getElementById('teacherPass').value = '';
+        }
+      }
+
+      function unlockTeacherPanel(e) {
+        e.preventDefault();
+        const code = document.getElementById('teacherPass').value.trim();
+        if (code === "123" || code.toLowerCase() === "duroub") {
+          unlockedTeacher = true;
+          playPitchSound(600, 0.15);
+          initTeacherSectionControls();
+        } else {
+          document.getElementById('teacherPassError').classList.remove('hidden');
+          playWrongSound();
+        }
+      }
+
+      function toggleTeacherPanel() {
+        playPitchSound(450, 0.08);
+        document.getElementById('teacherModal').className = "fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center z-50 p-4";
+        renderTeacherTable();
+      }
+
+      function closeTeacherModal() {
+        playPitchSound(350, 0.05);
+        document.getElementById('teacherModal').className = "fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4";
+      }
+
+      function renderTeacherTable() {
+        const tbody = document.getElementById('teacherTableBody');
+        tbody.innerHTML = '';
+
+        if (submittedTickets.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-slate-400 font-bold">لا توجد بطاقات خروج مرسلة حتى الآن.</td></tr>`;
+          return;
+        }
+
+        submittedTickets.forEach(t => {
+          const tr = document.createElement('tr');
+          tr.className = "border-b border-slate-100 hover:bg-slate-50 text-slate-700";
+
+          tr.innerHTML = `
+            <td class="p-3 font-black text-slate-900">${t.studentName}</td>
+            <td class="p-3 font-semibold">${t.projectSentence}</td>
+            <td class="p-3">
+              <span class="px-2.5 py-1 rounded-full text-[10px] font-black ${t.sentenceType === 'nominal' ? 'bg-emerald-50 border border-emerald-300 text-emerald-800' : 'bg-purple-50 border border-purple-300 text-purple-800'}">
+                ${t.sentenceType === 'nominal' ? '🏷️ اسمية' : '⚡ فعلية'}
+              </span>
+            </td>
+            <td class="p-3 text-pink-700 text-[11px] font-black">${t.classRating}</td>
+            <td class="p-3 text-indigo-950 text-[11px] font-black truncate max-w-[150px]" title="${t.gratitudeMessage || ''}">${t.gratitudeMessage || 'لا يوجد'}</td>
+            <td class="p-3 text-slate-400 font-normal">${t.timestamp}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+      }
+
+      function clearSubmittedTickets() {
+        if (confirm('هل أنت متأكد من رغبتك في مسح جميع بطاقات خروج طلاب دروب؟')) {
+          submittedTickets = [];
+          localStorage.removeItem('duroub_tickets');
+          renderTeacherTable();
+          playPitchSound(300, 0.25, 'sawtooth');
+          alert('تم مسح جميع السجلات بنجاح.');
+        }
+      }
+
+      // ==========================================
+      // Standalone Download Logic
+      // ==========================================
+      function downloadSelf() {
+        playPitchSound(700, 0.2);
+        // Grab current document source
+        const htmlContent = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
+        
+        // Generate Blob and download trigger
+        const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'duroub_young_entrepreneur_app.html';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }
+
+      // ==========================================
+      // App Initializer Load
+      // ==========================================
+      window.addEventListener('DOMContentLoaded', () => {
+        // Initialize scores
+        updateScoreUI();
+        
+        // Setup default tab
+        switchTab('story');
+
+        // Setup sound toggler visual state
+        const soundIconEl = document.getElementById('soundIcon');
+        if (soundIconEl) {
+          soundIconEl.innerText = audioEnabled ? '🔊' : '🔇';
+        }
+
+        // Initialize Noun vs Verb game
+        initNounVerbGame();
+      });
+    </script>
+
+    </div>
+  </body>
+</html>
